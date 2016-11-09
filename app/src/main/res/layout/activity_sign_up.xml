@@ -47,7 +47,7 @@
                     android:weightSum="100">
 
                     <EditText
-                        android:id="@+id/editText"
+                        android:id="@+id/editId"
                         android:layout_width="0dp"
                         android:layout_height="50dp"
                         android:layout_weight="70"
@@ -55,7 +55,8 @@
                         android:textSize="15sp"
                         android:inputType="textUri"
                         android:lines="1"
-                        android:maxLength="15" />
+                        android:maxLength="15"
+                        android:digits="abcdefghijklmnopqrstuvwxyz0123456789"/>
 
                     <Button
                         android:id="@+id/button2"
@@ -175,7 +176,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:onClick="onButtonClick"
+        android:onClick="signUp"
         android:text="회원가입하기"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"

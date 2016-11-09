@@ -3,4 +3,5 @@
     <string name="title_activity_main">MainActivity</string>
     <string name="age_prompt">나이를 선택해주세요.</string>
     <string name="weight_prompt">몸무게를 선택해주세요.</string>
+    <string name="server_ip">http://kirkee2.cafe24.com</string>
 </resources>
