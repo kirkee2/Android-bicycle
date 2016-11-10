@@ -78,12 +78,9 @@ public class SignUpActivity extends AppCompatActivity {
 
         idChecked = false;
 
-
-        new WebHook().execute("ada123112312123a",null,null);
         Intent intent = getIntent();
 
         kakaoId = intent.getStringExtra("kakao");
-        Toast.makeText(getApplicationContext(),kakaoId,Toast.LENGTH_LONG).show();
 
         ArrayAdapter<String> ageAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, getResources().getStringArray(R.array.spinnerAgeArray));
 
@@ -181,8 +178,9 @@ public class SignUpActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Toast.makeText(getBaseContext(), "resultCode : " + resultCode, Toast.LENGTH_SHORT).show();
 
+        String encodedImageTmp = null;
+
         if (requestCode == PICK_FROM_CAMERA) {
-            String encodedImageTmp = null;
             /*
             Intent intent = new Intent("com.android.camera.action.CROP");
             intent.setDataAndType(mImageCaptureUri, "image/*");
@@ -240,6 +238,15 @@ public class SignUpActivity extends AppCompatActivity {
                 imageButton.setImageBitmap(image_bitmap);
 
 
+                ByteArrayOutputStream baos0 = new ByteArrayOutputStream();
+
+                image_bitmap.compress(Bitmap.CompressFormat.JPEG, 40, baos0);
+                byte[] imageBytes0 = baos0.toByteArray();
+
+                encodedImageTmp = Base64.encodeToString(imageBytes0, Base64.DEFAULT);
+
+                encodedImage = encodedImageTmp;
+
                 //Toast.makeText(getBaseContext(), "name_Str : "+name_Str , Toast.LENGTH_SHORT).show();
             } catch (FileNotFoundException e) {
                 // TODO Auto-generated catch block
@@ -250,8 +257,6 @@ public class SignUpActivity extends AppCompatActivity {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
-
         }
     }
 
@@ -291,7 +296,7 @@ public class SignUpActivity extends AppCompatActivity {
         });
     }
 
-    public void duplicationCheck(View view) {
+    public void onDuplicationCheck(View view) {
         JSONObject json = new JSONObject();
         JSONObject result = null;
 
@@ -340,54 +345,49 @@ public class SignUpActivity extends AppCompatActivity {
         }
     }
 
-    public void signUp(View view){
-        if(!Connect.isNetWork(SignUpActivity.this)){
-            Toast.makeText(SignUpActivity.this,"인터넷 연결을 확인해주세요",Toast.LENGTH_SHORT).show();
-            return;
-        }
+    public void onSignUp(View view){
+        String sex = null;
 
         if(!idChecked || editId.getText().toString().compareTo(lastId)!=0){
             Toast.makeText(SignUpActivity.this,"아이디 중복체크를 해주세요",Toast.LENGTH_SHORT).show();
             return;
         }else if(ageIndex == 0){
-            Toast.makeText(SignUpActivity.this, "직업을 선택해주세요", Toast.LENGTH_SHORT).show();
+            Toast.makeText(SignUpActivity.this, "나이를 선택해주세요", Toast.LENGTH_SHORT).show();
             return;
         }else if(weightIndex == 0){
-            Toast.makeText(SignUpActivity.this, "지역을 선택해주세요", Toast.LENGTH_SHORT).show();
+            Toast.makeText(SignUpActivity.this, "몸무게를 선택해주세요", Toast.LENGTH_SHORT).show();
             return;
+        }else if(encodedImage == null){
+            Toast.makeText(SignUpActivity.this, "사진을 선택해주세요", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if(rg.getCheckedRadioButtonId() == radioMan.getId()){
+            sex = "man";
+        }else if(rg.getCheckedRadioButtonId() == radioWoman.getId()){
+            sex = "woman";
+        }else{
+            sex = "danger";
         }
 
         try {
-            Connect con = new Connect(getResources().getString(R.string.server_ip)+"/SignUp.php");
-
             JSONObject json = new JSONObject();
-            //json.put("kakao",)
+            json.put("kakao",kakaoId);
             json.put("id",editId.getText().toString());
-            json.put("photo",encodedImage);
-            if(rg.getCheckedRadioButtonId() == radioMan.getId()){
-                json.put("sex","m");
-            }else if(rg.getCheckedRadioButtonId() == radioWoman.getId()){
-                json.put("sex","f");
-            }
             json.put("age",""+ageIndex);
             json.put("weight",""+weightIndex);
-
-            /*
-            JSONObject result = con.post(con.getURL(), json);
-
-            if (result.getString("code").compareTo("0") == 0) {
-                Toast.makeText(SignUpActivity.this, "회원가입에 성공했습니다", Toast.LENGTH_SHORT).show();
-                Intent in = new Intent(SignUpActivity.this, LoginActivity.class);
-                startActivity(in);
-            } else if (result.getString("code").compareTo("1") == 0) {
-                Toast.makeText(SignUpActivity.this,"회원가입 실패"+result.toString(),Toast.LENGTH_SHORT).show();
-            }else{
-                Toast.makeText(SignUpActivity.this,"서버 에러",Toast.LENGTH_SHORT).show();
+            if(rg.getCheckedRadioButtonId() == radioMan.getId()){
+                json.put("sex",sex);
+            }else if(rg.getCheckedRadioButtonId() == radioWoman.getId()){
+                json.put("sex",sex);
             }
-            */
+            json.put("image",encodedImage+"");
+
+            new signUp().execute(getResources().getString(R.string.server_ip) + "/SignUp.php", json.toString());
         }catch(JSONException e){
             e.printStackTrace();
         }
+
     }
 
     private class IdCheck extends AsyncTask<String, Void, JSONObject> {
@@ -406,6 +406,8 @@ public class SignUpActivity extends AppCompatActivity {
         }
 
         protected void onPostExecute(JSONObject result) {
+
+            //Toast.makeText(getApplicationContext(),"id = " + editId.getText().toString() + " age = " + ageIndex + " weight = " + weightIndex + " sex = " + sex + " image = " + encodedImage ,Toast.LENGTH_LONG).show();
             if (result == null) {
                 Toast.makeText(getApplicationContext(), "정보를 받는 도중 에러가 났습니다. 다시 한번 확인해주세요.", Toast.LENGTH_LONG).show();
             } else {
@@ -433,6 +435,43 @@ public class SignUpActivity extends AppCompatActivity {
                         } else {
                             Toast.makeText(SignUpActivity.this, "Server Error", Toast.LENGTH_SHORT).show();
                         }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private class signUp extends AsyncTask<String, Void, JSONObject> {
+        protected JSONObject doInBackground(String... urls) {
+
+            try {
+                JSONObject jsonObj = new JSONObject(urls[1]);
+
+                Connect con = new Connect(urls[0]);
+
+                return con.postJsonObject(con.getURL(), jsonObj);
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        protected void onPostExecute(JSONObject result) {
+            if (result == null) {
+                Toast.makeText(getApplicationContext(), "정보를 받는 도중 에러가 났습니다. 다시 한번 확인해주세요.", Toast.LENGTH_LONG).show();
+            } else {
+                try {
+                    if(result.getString("code").compareTo("0") == 0) {
+                        Toast.makeText(SignUpActivity.this, "회원가입에 성공했습니다", Toast.LENGTH_SHORT).show();
+                        Intent in = new Intent(SignUpActivity.this, MainActivity.class);
+                        startActivity(in);
+                        finish();
+                    }else if(result.getString("code").compareTo("1") == 0) {
+                        Toast.makeText(SignUpActivity.this,"회원가입 실패"+result.toString(),Toast.LENGTH_SHORT).show();
+                    }else{
+                        Toast.makeText(SignUpActivity.this,"서버 에러",Toast.LENGTH_SHORT).show();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();

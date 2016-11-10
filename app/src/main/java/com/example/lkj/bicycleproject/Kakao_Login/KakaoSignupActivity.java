@@ -7,10 +7,7 @@ package com.example.lkj.bicycleproject.Kakao_Login;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Toast;
 
-import com.example.lkj.bicycleproject.Connection.WebHook;
-import com.example.lkj.bicycleproject.MainActivity;
 import com.example.lkj.bicycleproject.SignUpActivity;
 import com.kakao.auth.ErrorCode;
 import com.kakao.network.ErrorResult;
@@ -29,7 +26,6 @@ public class KakaoSignupActivity extends Activity{
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestMe();
-        new WebHook().execute("qqqqqqqqqqqqddasda",null,null);
     }
 
     /**
@@ -62,8 +58,7 @@ public class KakaoSignupActivity extends Activity{
             @Override
             public void onSuccess(UserProfile userProfile) {  //성공 시 userProfile 형태로 반환
                 Intent intent = new Intent(KakaoSignupActivity.this, SignUpActivity.class);
-                intent.putExtra("kakao",String.valueOf(userProfile.getId()));
-                new WebHook().execute("adasdasdasddasda",null,null);
+                intent.putExtra("kakao",""+userProfile.getId());
                 startActivity(intent);
                 finish();
             }
