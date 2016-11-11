@@ -19,4 +19,11 @@
         <item name="android:background">#FFFFFF</item>
     </style>
 
+    <style name="Toolbar" parent="Base.Widget.AppCompat.Toolbar">
+        <item name="android:textColorPrimary">@android:color/white</item>
+        <item name="android:textColorSecondary">@android:color/white</item>
+        <item name="actionMenuTextColor">@android:color/white</item>
+        <item name="android:background">#FF29B6F6</item>
+    </style>
+
 </resources>

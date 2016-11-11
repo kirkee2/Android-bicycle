@@ -6,8 +6,14 @@ package com.example.lkj.bicycleproject.Kakao_Login;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.widget.Toast;
 
+import com.example.lkj.bicycleproject.Connection.Connect;
+import com.example.lkj.bicycleproject.Connection.WebHook;
+import com.example.lkj.bicycleproject.MainActivity;
+import com.example.lkj.bicycleproject.R;
 import com.example.lkj.bicycleproject.SignUpActivity;
 import com.kakao.auth.ErrorCode;
 import com.kakao.network.ErrorResult;
@@ -16,7 +22,11 @@ import com.kakao.usermgmt.callback.MeResponseCallback;
 import com.kakao.usermgmt.response.model.UserProfile;
 import com.kakao.util.helper.log.Logger;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class KakaoSignupActivity extends Activity{
+    String kakaoInfo;
     /**
      * Main으로 넘길지 가입 페이지를 그릴지 판단하기 위해 me를 호출한다.
      * @param savedInstanceState 기존 session 정보가 저장된 객체
@@ -57,23 +67,66 @@ public class KakaoSignupActivity extends Activity{
 
             @Override
             public void onSuccess(UserProfile userProfile) {  //성공 시 userProfile 형태로 반환
-                Intent intent = new Intent(KakaoSignupActivity.this, SignUpActivity.class);
-                intent.putExtra("kakao",""+userProfile.getId());
-                startActivity(intent);
-                finish();
+                kakaoInfo = userProfile.getId() + "";
+
+                JSONObject json = new JSONObject();
+                try {
+                    json.put("kakao",kakaoInfo);
+                    new checkLogin().execute(getResources().getString(R.string.server_ip) + "/CheckLogin.php", json.toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+
+                }
             }
         });
     }
 
-    private void redirectSignUpActivity() {
-        startActivity(new Intent(this, SignUpActivity.class));
-        finish();
-    }
     protected void redirectLoginActivity() {
         final Intent intent = new Intent(this, LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         startActivity(intent);
         finish();
+    }
+
+    private class checkLogin extends AsyncTask<String, Void, JSONObject> {
+        protected JSONObject doInBackground(String... urls) {
+
+            try {
+                JSONObject jsonObj = new JSONObject(urls[1]);
+
+                Connect con = new Connect(urls[0]);
+
+                return con.postJsonObject(con.getURL(), jsonObj);
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        protected void onPostExecute(JSONObject result) {
+            if (result == null) {
+                Toast.makeText(getApplicationContext(), "정보를 받는 도중 에러가 났습니다. 다시 한번 확인해주세요.", Toast.LENGTH_LONG).show();
+            } else {
+                try {
+                    if(result.getString("code").compareTo("0") == 0) {
+                        Intent intent = new Intent(KakaoSignupActivity.this, MainActivity.class);
+                        startActivity(intent);
+                        finish();
+
+                    }else if(result.getString("code").compareTo("1") == 0) {
+                        Intent intent = new Intent(KakaoSignupActivity.this, SignUpActivity.class);
+                        intent.putExtra("kakao",""+kakaoInfo);
+                        startActivity(intent);
+                        finish();
+
+                    }else{
+                        Toast.makeText(KakaoSignupActivity.this,"서버 에러",Toast.LENGTH_SHORT).show();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
 }
