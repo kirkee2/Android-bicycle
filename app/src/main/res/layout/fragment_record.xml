@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#F032F1"
     tools:context="com.example.lkj.bicycleproject.Fragment.RecordFragment">
 
     <!-- TODO: Update blank fragment layout -->

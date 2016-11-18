@@ -26,7 +26,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class KakaoSignupActivity extends Activity{
-    String kakaoInfo;
+    String kakaoId;
     /**
      * Main으로 넘길지 가입 페이지를 그릴지 판단하기 위해 me를 호출한다.
      * @param savedInstanceState 기존 session 정보가 저장된 객체
@@ -67,11 +67,11 @@ public class KakaoSignupActivity extends Activity{
 
             @Override
             public void onSuccess(UserProfile userProfile) {  //성공 시 userProfile 형태로 반환
-                kakaoInfo = userProfile.getId() + "";
+                kakaoId = userProfile.getId() + "";
 
                 JSONObject json = new JSONObject();
                 try {
-                    json.put("kakao",kakaoInfo);
+                    json.put("kakao",kakaoId);
                     new checkLogin().execute(getResources().getString(R.string.server_ip) + "/CheckLogin.php", json.toString());
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -115,7 +115,6 @@ public class KakaoSignupActivity extends Activity{
 
                     }else if(result.getString("code").compareTo("1") == 0) {
                         Intent intent = new Intent(KakaoSignupActivity.this, SignUpActivity.class);
-                        intent.putExtra("kakao",""+kakaoInfo);
                         startActivity(intent);
                         finish();
 

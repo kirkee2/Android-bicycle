@@ -75,9 +75,8 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="25"
-                        android:background="#B3E5FC"
                         android:onClick="changeFragment"
-                        android:src="@drawable/ic_network_check_black_24dp" />
+                        android:src="@drawable/main_button" />
 
                     <ImageButton
                         android:id="@+id/btFindRoad"
@@ -86,7 +85,7 @@
                         android:layout_height="match_parent"
                         android:layout_weight="25"
                         android:onClick="changeFragment"
-                        android:src="@drawable/ic_room_black_24dp" />
+                        android:src="@drawable/find_road_button" />
 
                     <ImageButton
                         android:id="@+id/btRecommandRoad"
@@ -95,7 +94,7 @@
                         android:layout_height="match_parent"
                         android:layout_weight="25"
                         android:onClick="changeFragment"
-                        android:src="@drawable/ic_directions_bike_black_24dp" />
+                        android:src="@drawable/recommand_road_button" />
 
                     <ImageButton
                         android:id="@+id/btRecord"
@@ -104,8 +103,7 @@
                         android:layout_height="match_parent"
                         android:layout_weight="25"
                         android:onClick="changeFragment"
-                        android:scaleType="fitXY"
-                        android:src="@drawable/record" />
+                        android:src="@drawable/record_button"/>
                 </LinearLayout>
 
             </LinearLayout>

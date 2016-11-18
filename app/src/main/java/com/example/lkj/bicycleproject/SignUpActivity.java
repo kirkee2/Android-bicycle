@@ -66,6 +66,7 @@ public class SignUpActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
+        requestMe();
 
         imageButton = (ImageButton) findViewById(R.id.imageAdd);
         //imageButton.setImageURI(Uri.parse(tmp[0]));
@@ -78,10 +79,6 @@ public class SignUpActivity extends AppCompatActivity {
 
         idChecked = false;
 
-        Intent intent = getIntent();
-
-        kakaoId = intent.getStringExtra("kakao");
-
         ArrayAdapter<String> ageAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, getResources().getStringArray(R.array.spinnerAgeArray));
 
         spinnerAge.setAdapter(
@@ -93,7 +90,7 @@ public class SignUpActivity extends AppCompatActivity {
         spinnerAge.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                ageIndex = position;
+                ageIndex = position+9;
             }
 
             @Override
@@ -113,7 +110,7 @@ public class SignUpActivity extends AppCompatActivity {
         spinnerWeight.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                weightIndex = position;
+                weightIndex = position+29;
             }
 
             @Override
@@ -124,13 +121,6 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     public void onImageClick(View view) {
-        DialogInterface.OnClickListener cameraListener = new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                doTakePhotoAction();
-            }
-        };
-
         DialogInterface.OnClickListener albumListener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -147,21 +137,9 @@ public class SignUpActivity extends AppCompatActivity {
 
         new AlertDialog.Builder(this)
                 .setTitle("이미지 선택")
-                .setPositiveButton("사진촬영", cameraListener)
-                .setNeutralButton("앨범선택", albumListener)
+                .setPositiveButton("앨범선택", albumListener)
                 .setNegativeButton("취소", cancelListener)
                 .show();
-    }
-
-    public void doTakePhotoAction() {
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-        String url = "tmp_" + String.valueOf(System.currentTimeMillis()) + ".jpg";
-        mImageCaptureUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(), url));
-
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, mImageCaptureUri);
-
-        startActivityForResult(intent, PICK_FROM_CAMERA);
     }
 
     public void doTakeAlbumAction() {
@@ -176,30 +154,8 @@ public class SignUpActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Toast.makeText(getBaseContext(), "resultCode : " + resultCode, Toast.LENGTH_SHORT).show();
-
-        String encodedImageTmp = null;
-
-        if (requestCode == PICK_FROM_CAMERA) {
-            /*
-            Intent intent = new Intent("com.android.camera.action.CROP");
-            intent.setDataAndType(mImageCaptureUri, "image/*");
-
-            intent.putExtra("outputX", 200);
-            intent.putExtra("outputY", 200);
-
-            intent.putExtra("aspectX", 1);
-            intent.putExtra("aspectY", 1);
-            intent.putExtra("scale", true);
-            intent.putExtra("return-data", true);
-
-            startActivityForResult(intent, CROP_FROM_IMAGE);
-            */
-            if (data == null) {
-
-            } else {
-                mImageCaptureUri = data.getData();
-            }
+        if (requestCode == PICK_FROM_ALBUM && resultCode == RESULT_OK && data != null) {
+            mImageCaptureUri = data.getData();
 
             try {
                 Bitmap image_bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), data.getData());
@@ -211,41 +167,7 @@ public class SignUpActivity extends AppCompatActivity {
                 image_bitmap.compress(Bitmap.CompressFormat.JPEG, 40, baos0);
                 byte[] imageBytes0 = baos0.toByteArray();
 
-                encodedImageTmp = Base64.encodeToString(imageBytes0, Base64.DEFAULT);
-
-                encodedImage = encodedImageTmp;
-            }catch (FileNotFoundException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-
-        } else if (requestCode == PICK_FROM_ALBUM) {
-            if (data == null) {
-
-            } else {
-                mImageCaptureUri = data.getData();
-            }
-
-            try {
-                Bitmap image_bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), data.getData());
-
-                imageButton.setImageBitmap(image_bitmap);
-
-
-                ByteArrayOutputStream baos0 = new ByteArrayOutputStream();
-
-                image_bitmap.compress(Bitmap.CompressFormat.JPEG, 40, baos0);
-                byte[] imageBytes0 = baos0.toByteArray();
-
-                encodedImageTmp = Base64.encodeToString(imageBytes0, Base64.DEFAULT);
-
-                encodedImage = encodedImageTmp;
+                encodedImage = Base64.encodeToString(imageBytes0, Base64.DEFAULT);
 
                 //Toast.makeText(getBaseContext(), "name_Str : "+name_Str , Toast.LENGTH_SHORT).show();
             } catch (FileNotFoundException e) {
@@ -381,7 +303,9 @@ public class SignUpActivity extends AppCompatActivity {
             }else if(rg.getCheckedRadioButtonId() == radioWoman.getId()){
                 json.put("sex",sex);
             }
-            json.put("image",encodedImage+"");
+            json.put("image",encodedImage);
+
+            //new WebHook().execute("id = " + editId.getText().toString() + " age = " + ageIndex + " weight = " + weightIndex + " sex = " + sex + " image = " + encodedImage,null,null);
 
             new signUp().execute(getResources().getString(R.string.server_ip) + "/SignUp.php", json.toString());
         }catch(JSONException e){
@@ -459,6 +383,8 @@ public class SignUpActivity extends AppCompatActivity {
         }
 
         protected void onPostExecute(JSONObject result) {
+
+            Toast.makeText(getApplicationContext(),"result = " + result,Toast.LENGTH_LONG).show();
             if (result == null) {
                 Toast.makeText(getApplicationContext(), "정보를 받는 도중 에러가 났습니다. 다시 한번 확인해주세요.", Toast.LENGTH_LONG).show();
             } else {
@@ -478,5 +404,42 @@ public class SignUpActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    protected void requestMe() { //유저의 정보를 받아오는 함수
+        UserManagement.requestMe(new MeResponseCallback() {
+            @Override
+            public void onFailure(ErrorResult errorResult) {
+                String message = "failed to get user info. msg=" + errorResult;
+                Logger.d(message);
+
+                ErrorCode result = ErrorCode.valueOf(errorResult.getErrorCode());
+                if (result == ErrorCode.CLIENT_ERROR_CODE) {
+                    finish();
+                } else {
+                    Intent intent = new Intent(SignUpActivity.this, LoginActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                    startActivity(intent);
+                    finish();
+                }
+            }
+
+            @Override
+            public void onSessionClosed(ErrorResult errorResult) {
+
+                Intent intent = new Intent(SignUpActivity.this, LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                startActivity(intent);
+                finish();
+            }
+
+            @Override
+            public void onNotSignedUp() {} // 카카오톡 회원이 아닐 시 showSignup(); 호출해야함
+
+            @Override
+            public void onSuccess(UserProfile userProfile) {  //성공 시 userProfile 형태로 반환
+                kakaoId = userProfile.getId() + "";
+            }
+        });
     }
 }

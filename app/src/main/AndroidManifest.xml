@@ -4,6 +4,8 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:name=".Kakao_Login.GlobalApplication"
@@ -15,6 +17,14 @@
         <meta-data
             android:name="com.kakao.sdk.AppKey"
             android:value="@string/kakao_app_key" />
+
+        <receiver android:name=".GPSStatusBroadcastReceiver">
+            <intent-filter>
+                <action android:name="android.location.KEY_PROVIDER_ENABLED" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
 
         <activity
             android:name="com.kakao.auth.authorization.authcode.KakaoWebViewActivity"
@@ -59,7 +69,9 @@
         <activity
             android:name=".MainActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".SettingActivity"></activity>
+        <activity android:name=".SettingActivity" />
+        <activity android:name=".SampleActivity21" />
+        <activity android:name=".StartActivity"></activity>
     </application>
 
 </manifest>

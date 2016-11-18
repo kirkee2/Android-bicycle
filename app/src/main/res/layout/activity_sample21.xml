@@ -7,25 +7,32 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.example.lkj.bicycleproject.SettingActivity">
+    tools:context="com.example.lkj.bicycleproject.SampleActivity21">
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="로그아웃"
-        android:id="@+id/logout"
+        android:text="New Button"
+        android:id="@+id/button4"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Large Text"
+        android:id="@+id/Longitude"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="114dp"
-        android:onClick="logout" />
+        android:layout_centerHorizontal="true" />
 
-    <Button
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="탈퇴"
-        android:id="@+id/unlink"
-        android:layout_below="@+id/logout"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Latitude"
+        android:id="@+id/Latitude"
+        android:layout_below="@+id/Longitude"
         android:layout_centerHorizontal="true"
-        android:nestedScrollingEnabled="false"
-        android:onClick="unlink" />
+        android:layout_marginTop="45dp" />
 </RelativeLayout>
