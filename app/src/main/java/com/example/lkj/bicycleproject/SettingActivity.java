@@ -77,7 +77,7 @@ public class SettingActivity extends AppCompatActivity {
             @Override
             public void onCompleteLogout() {
                 Intent intent = new Intent(SettingActivity.this, LoginActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
                 finish();
             }
@@ -158,7 +158,7 @@ public class SettingActivity extends AppCompatActivity {
                         //finishAffinity();
                         Toast.makeText(SettingActivity.this, "탈퇴에 성공하였습니다.", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(SettingActivity.this, LoginActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
                         finish();
                     }else if(result.getString("code").compareTo("1") == 0) {
