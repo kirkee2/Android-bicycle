@@ -37,4 +37,9 @@ dependencies {
     compile 'com.android.support:support-v4:24.2.0'
     compile 'com.android.support:design:24.2.0'
     compile 'gun0912.ted:tedpermission:1.0.2'
+    compile 'com.mikhaellopez:circularimageview:3.0.2'
+    compile 'com.googlecode.android-query:android-query:0.25.9'
+    compile 'com.github.anastr:speedviewlib:1.1.0'
+    compile 'com.android.support:recyclerview-v7:24.2.0'
+    compile group: 'com.google.zxing', name: 'core', version: '3.3.0'
 }

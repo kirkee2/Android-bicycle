@@ -1,7 +1,5 @@
 package com.example.lkj.bicycleproject.Connection;
 
-import com.example.lkj.bicycleproject.Structure.WeatherStructure;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -16,6 +14,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
  * Created by leegunjoon on 2016. 11. 18..
  */
 
+/*
 public class Weather {
     private double latitude;
     private double longitude;
@@ -31,7 +30,7 @@ public class Weather {
             String url = "http://www.kma.go.kr/wid/queryDFS.jsp?gridx="+latitude+"&gridy="+longitude;
             xmlDoc = parser.parse(url);
 
-            /*
+
             Element root = xmlDoc.getDocumentElement();
 
             NodeList datas = xmlDoc.getElementsByTagName("data");
@@ -53,7 +52,7 @@ public class Weather {
                 wfEn[i] = xmlNode22.getTextContent();
                 hour1[i] = "기준시각 : " + xmlNode23.getTextContent() + "시";
             }
-            */
+
 
             NodeList datas = xmlDoc.getElementsByTagName("data");
 
@@ -105,3 +104,5 @@ public class Weather {
         return weatherStructure;
     }
 }
+
+*/

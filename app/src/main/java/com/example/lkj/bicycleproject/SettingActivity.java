@@ -32,6 +32,7 @@ public class SettingActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_setting);
         requestMe();
     }
@@ -48,7 +49,7 @@ public class SettingActivity extends AppCompatActivity {
                     finish();
                 } else {
                     Intent intent = new Intent(SettingActivity.this, LoginActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
                     finish();
                 }
@@ -57,7 +58,7 @@ public class SettingActivity extends AppCompatActivity {
             @Override
             public void onSessionClosed(ErrorResult errorResult) {
                 Intent intent = new Intent(SettingActivity.this, LoginActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
                 finish();
             }
@@ -77,11 +78,16 @@ public class SettingActivity extends AppCompatActivity {
             @Override
             public void onCompleteLogout() {
                 Intent intent = new Intent(SettingActivity.this, LoginActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
                 finish();
             }
         });
+    }
+
+    public void testing(View v){
+        Intent intent = new Intent(SettingActivity.this, UserInfoSettingActivity.class);
+        startActivity(intent);
     }
 
     public void unlink(View v) {
@@ -114,7 +120,6 @@ public class SettingActivity extends AppCompatActivity {
                                         JSONObject json = new JSONObject();
                                         try {
                                             json.put("kakao",kakaoId);
-                                            Toast.makeText(getApplicationContext(),kakaoId,Toast.LENGTH_LONG).show();
                                             new Unlink().execute(getResources().getString(R.string.server_ip) + "/Unlink.php", json.toString());
                                         } catch (JSONException e) {
                                             e.printStackTrace();
@@ -158,7 +163,7 @@ public class SettingActivity extends AppCompatActivity {
                         //finishAffinity();
                         Toast.makeText(SettingActivity.this, "탈퇴에 성공하였습니다.", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(SettingActivity.this, LoginActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
                         finish();
                     }else if(result.getString("code").compareTo("1") == 0) {

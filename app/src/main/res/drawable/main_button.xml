@@ -2,9 +2,9 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:state_selected="true"
-        android:drawable="@mipmap/ic_network_check_blue">
+        android:drawable="@mipmap/ic_main_blue">
     </item>
     <item
-        android:drawable="@drawable/ic_network_check_black_24dp">
+        android:drawable="@drawable/ic_main_black_24dp">
     </item>
 </selector>

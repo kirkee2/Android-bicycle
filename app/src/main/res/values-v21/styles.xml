@@ -26,4 +26,14 @@
         <item name="android:background">#FF29B6F6</item>
     </style>
 
+    <style name="Spinner" parent="Theme.AppCompat.Light.Dialog">
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="SpinnerButtonStyle" parent="android:Widget.Holo.Spinner">
+    </style>
+
+
+
+
 </resources>

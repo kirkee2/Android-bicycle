@@ -28,4 +28,14 @@
         android:layout_centerHorizontal="true"
         android:nestedScrollingEnabled="false"
         android:onClick="unlink" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Session testing"
+        android:id="@+id/button6"
+        android:layout_below="@+id/unlink"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="72dp"
+        android:onClick="testing" />
 </RelativeLayout>

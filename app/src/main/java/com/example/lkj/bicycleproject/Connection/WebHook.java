@@ -28,3 +28,5 @@ public class WebHook extends AsyncTask<String, Void, Void> {
         return null;
     }
 }
+
+// 사용법                  new WebHook().execute("쓰고싶은말",null,null);
