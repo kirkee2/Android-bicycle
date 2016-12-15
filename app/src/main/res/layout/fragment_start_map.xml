@@ -4,10 +4,13 @@
     android:layout_height="match_parent"
     tools:context="com.example.lkj.bicycleproject.Fragment.StartMapFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+    <RelativeLayout
+        android:id="@+id/contentView"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:background="#FFFFFF"
+        android:layout_gravity="center">
+    </RelativeLayout>
 
 </FrameLayout>

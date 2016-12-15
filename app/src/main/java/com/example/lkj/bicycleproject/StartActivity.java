@@ -2,6 +2,7 @@ package com.example.lkj.bicycleproject;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -10,18 +11,23 @@ import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.lkj.bicycleproject.Connection.WebHook;
 import com.example.lkj.bicycleproject.Fragment.StartMapFragment;
 import com.example.lkj.bicycleproject.Fragment.StartSpeedFragment;
 import com.example.lkj.bicycleproject.Kakao_Login.LoginActivity;
@@ -40,6 +46,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -73,6 +81,8 @@ public class StartActivity extends AppCompatActivity {
     private float movedDistance = 0;
     private float totalDistance = 0;
 
+    private int caloryInt;
+
 
     private float mySpeed;
     private float maxSpeed;
@@ -83,7 +93,7 @@ public class StartActivity extends AppCompatActivity {
 
     private SpeedView speedometer;
 
-    private StartSpeedFragment startSpeedFragment;
+    FragmentTransaction fragmentTransaction;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,12 +108,16 @@ public class StartActivity extends AppCompatActivity {
         startPause = (Button)findViewById(R.id.start);
         stop = (Button)findViewById(R.id.stop);
 
-        pager = (ViewPager) findViewById(R.id.pager);
+        pager = (ViewPager) findViewById(R.id.startPager);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
 
-        startSpeedFragment = new StartSpeedFragment();
-        //setSupportActionBar(toolbar);
+        setSupportActionBar(toolbar);
 
+        if (getSupportActionBar() != null){
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
         /*
         pagerView = getLayoutInflater().inflate(R.layout.fragment_start_speed, null, false);
 
@@ -112,13 +126,27 @@ public class StartActivity extends AppCompatActivity {
         speedometer.speedTo(70, 4000);
         */
 
-        startSpeedFragment.setSpeed();
+        //startSpeedFragment.setSpeed();
+
 
         adapterViewPager = new MyPagerAdapter(getSupportFragmentManager());
         pager.setAdapter(adapterViewPager);
-        new setAdapterTask().execute();
 
+        //pager.setCurrentItem(1);
+        //new setAdapterTask().execute();
 
+        //StartSpeedFragment startSpeedFragment = (StartSpeedFragment) getSupportFragmentManager().findFragmentByTag("android:switcher:"+R.id.startPager+":0");
+        //StartSpeedFragment startSpeedFragment = (StartSpeedFragment) getSupportFragmentManager().findFragmentById(R.id.startPager);
+
+        //new WebHook().execute(startSpeedFragment+"");
+
+        //startSpeedFragment.setSpeed(70);
+
+        //StartSpeedFragment startSpeedFragment = new StartSpeedFragment();
+        //StartSpeedFragment.newInstance(12);
+        //Bundle bundle = new Bundle();
+        //bundle.putInt("speed", 50);
+        //startSpeedFragment.setArguments(bundle);
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
@@ -135,6 +163,8 @@ public class StartActivity extends AppCompatActivity {
                         if (mySpeed > maxSpeed) {
                             maxSpeed = mySpeed;
                         }
+
+                        StartSpeedFragment.speedometer.speedTo((int) mySpeed,1000);
                         //speed.setText("현재 속도 : " + mySpeed + " km/h, 최고속도 : " + maxSpeed + " km/h");
 
                         //speedometer.speedTo((int) mySpeed);
@@ -151,7 +181,9 @@ public class StartActivity extends AppCompatActivity {
 
                         totalDistance += movedDistance;
 
-                        distance.setText("총 이동 거리 : " + totalDistance + "m");
+                        distance.setText((int)(totalDistance) + "m");
+                        caloryInt = (int) (totalDistance/40);
+                        calory.setText(caloryInt+"");
                         //movedDistanceText.setText("움직인 거리 : " + movedDistance + "m");
 
                         previousLocation = location;
@@ -170,11 +202,15 @@ public class StartActivity extends AppCompatActivity {
             }
 
             public void onProviderDisabled(String provider) {
+                pauseTimerTask();
+                startPause.setText("start");
+                startPause.setBackgroundColor(0xFF5E7AC8);
                 Toast.makeText(getApplicationContext(), "GPS가 꺼졌습니다. GPS를 켜주세요.", Toast.LENGTH_LONG).show();
             }
         };
 
 
+        /*
         toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.ic_arrow_back_white_24dp));
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -183,12 +219,74 @@ public class StartActivity extends AppCompatActivity {
                 //What to do on back clicked
             }
         });
+        */
     }
+    public ViewPager getViewPager() {
+        if (null == pager) {
+            pager = (ViewPager) findViewById(R.id.startPager);
+        }
+        return pager;
+    }
+
+    public static class MyPagerAdapter extends FragmentPagerAdapter {
+        private static int NUM_ITEMS = 2;
+        FragmentManager fm;
+
+        public MyPagerAdapter(FragmentManager fragmentManager) {
+            super(fragmentManager);
+            fm = fragmentManager;
+        }
+
+        // Returns total number of pages
+        @Override
+        public int getCount() {
+            return NUM_ITEMS;
+        }
+
+        // Returns the fragment to display for that page
+        @Override
+        public android.support.v4.app.Fragment getItem(int position) {
+            switch (position) {
+                case 0: // Fragment # 0 - This will show FirstFragment
+                    return new StartSpeedFragment();
+                case 1: // Fragment # 0 - This will show FirstFragment different title
+                    return new StartMapFragment();
+                default:
+                    return null;
+            }
+        }
+
+        // Returns the page title for the top indicator
+        @Override
+        public CharSequence getPageTitle(int position) {
+            if(position == 0){
+                return "속도계";
+            }else if(position == 1){
+                return "지도";
+            }else{
+                return null;
+            }
+        }
+    }
+
+    private class setAdapterTask extends AsyncTask<Void,Void,Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result){
+            pager.setAdapter(adapterViewPager);
+        }
+    }
+
 
     private Location getLastKnownLocation() {
         locationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
 
-        String[] providers = {LocationManager.GPS_PROVIDER, LocationManager.NETWORK_PROVIDER};
+        String[] providers = {LocationManager.GPS_PROVIDER};
         //List<String> providers = locationManager.getProviders(true);
         //providers.add(LocationManager.GPS_PROVIDER);
         //providers.add(LocationManager.NETWORK_PROVIDER);
@@ -237,12 +335,37 @@ public class StartActivity extends AppCompatActivity {
 
     }
 
+    private void alertCheckGPS() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("GPS가 꺼져있습니다. GPS를 켜시겠습니까? GPS가 꺼져있다면 기능의 제한이 있습니다.")
+                .setCancelable(false)
+                .setPositiveButton("GPS 켜기",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                Intent gpsOptionsIntent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                                startActivity(gpsOptionsIntent);
+                            }
+                        })
+                .setNegativeButton("취소",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
     public void startPause(View view){
         if(!timerOnCheck){
-            startTimerTask();
-            timerOnCheck = true;
-            startPause.setText("pause");
-            startPause.setBackgroundColor(0xFFE7902E);
+            if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                alertCheckGPS();
+            }else {
+                startTimerTask();
+                timerOnCheck = true;
+                startPause.setText("pause");
+                startPause.setBackgroundColor(0xFFE7902E);
+            }
         }else{
             if(!timerPauseCheck){
                 pauseTimerTask();
@@ -289,7 +412,7 @@ public class StartActivity extends AppCompatActivity {
                         int minuteRest = hourRest%60;
                         int second = minuteRest;
 
-                        timeRecord.setText(hour + ":" + minute + ":" + second);
+                        timeRecord.setText(String.format("%02d", hour) + ":" + String.format("%02d", minute) + ":" + String.format("%02d", second));
                     }
                 });
             }
@@ -307,16 +430,17 @@ public class StartActivity extends AppCompatActivity {
             }
             locationManager.removeUpdates(locationListener);
 
-            mCount = 0;
+            //mCount = 0;
         }
 
-       timeRecord.setText("00:00:00");
+       //timeRecord.setText("00:00:00");
     }
 
     private void pauseTimerTask() {
         if (m1000MsCountTimerTask != null) {
             timerPauseCheck = true;
             m1000MsCountTimerTask.cancel();
+            previousLocation = null;
 
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 permissionCheck();
@@ -324,45 +448,6 @@ public class StartActivity extends AppCompatActivity {
             locationManager.removeUpdates(locationListener);
 
             Toast.makeText(getApplicationContext(),"주행 일시 정지하였습니다.",Toast.LENGTH_LONG).show();
-        }
-    }
-    public static class MyPagerAdapter extends FragmentPagerAdapter {
-        private static int NUM_ITEMS = 2;
-
-        public MyPagerAdapter(FragmentManager fragmentManager) {
-            super(fragmentManager);
-        }
-
-        // Returns total number of pages
-        @Override
-        public int getCount() {
-            return NUM_ITEMS;
-        }
-
-        // Returns the fragment to display for that page
-        @Override
-        public android.support.v4.app.Fragment getItem(int position) {
-            switch (position) {
-                case 0: // Fragment # 0 - This will show FirstFragment
-                    return new StartSpeedFragment();
-                case 1: // Fragment # 0 - This will show FirstFragment different title
-                    return new StartMapFragment();
-                default:
-                    return null;
-            }
-        }
-
-
-        // Returns the page title for the top indicator
-        @Override
-        public CharSequence getPageTitle(int position) {
-            if(position == 0){
-                return "속도계";
-            }else if(position == 1){
-                return "지도";
-            }else{
-                return null;
-            }
         }
     }
 
@@ -405,21 +490,6 @@ public class StartActivity extends AppCompatActivity {
             }
         });
     }
-
-
-    private class setAdapterTask extends AsyncTask<Void,Void,Void> {
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result){
-            pager.setAdapter(adapterViewPager);
-        }
-    }
-
 
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {

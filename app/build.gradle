@@ -33,13 +33,15 @@ dependencies {
 
     // push sdk를 사용하기 위해 필요.
     compile group: project.KAKAO_SDK_GROUP, name: 'push', version: project.KAKAO_SDK_VERSION
-    compile 'com.android.support:appcompat-v7:24.2.0'
-    compile 'com.android.support:support-v4:24.2.0'
-    compile 'com.android.support:design:24.2.0'
+    compile group: 'com.google.zxing', name: 'core', version: '3.3.0'
+    compile 'com.android.support:appcompat-v7:24.2.1'
+    compile 'com.android.support:support-v4:24.2.1'
+    compile 'com.android.support:design:24.2.1'
     compile 'gun0912.ted:tedpermission:1.0.2'
     compile 'com.mikhaellopez:circularimageview:3.0.2'
     compile 'com.googlecode.android-query:android-query:0.25.9'
     compile 'com.github.anastr:speedviewlib:1.1.0'
-    compile 'com.android.support:recyclerview-v7:24.2.0'
-    compile group: 'com.google.zxing', name: 'core', version: '3.3.0'
+    compile 'com.android.support:recyclerview-v7:24.2.1'
+    compile files('libs/com.skp.Tmap_1.0.44.jar')
+
 }
