@@ -613,14 +613,15 @@ public class WeatherActivity extends AppCompatActivity {
         return addressInfo;
     }
 
-    public void onPause(){
-        super.onPause();
+    public void onStop(){
+        super.onStop();
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             permissionCheck();
         }
         locationManager.removeUpdates(locationListener);
     }
+
 
     public void onDestroy() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {

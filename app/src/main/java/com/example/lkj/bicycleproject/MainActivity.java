@@ -284,7 +284,7 @@ public class MainActivity extends AppCompatActivity {
                     drawer.closeDrawer(navList);
                     break;
                 case 2:
-                    intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/ENOW-IJI"));
+                    intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/kirkee2/Android-bicycle"));
                     startActivity(intent);
                     //intent.setPackage("com.android.chrome");
                     drawer.closeDrawer(navList);

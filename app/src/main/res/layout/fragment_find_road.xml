@@ -2,15 +2,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.lkj.bicycleproject.Fragment.FindRoadFragment"
-    android:background="#FFFF00">
+    tools:context="com.example.lkj.bicycleproject.Fragment.FindRoadFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:textSize="35sp"
-        android:text="Find Road" />
-
+    <RelativeLayout
+        android:id="@+id/contentView"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:background="#FFFFFF"
+        android:layout_gravity="center">
+    </RelativeLayout>
 </FrameLayout>

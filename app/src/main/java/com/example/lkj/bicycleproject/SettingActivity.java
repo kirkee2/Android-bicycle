@@ -7,13 +7,19 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.lkj.bicycleproject.Connection.Connect;
 import com.example.lkj.bicycleproject.Connection.WebHook;
 import com.example.lkj.bicycleproject.Kakao_Login.KakaoSignupActivity;
 import com.example.lkj.bicycleproject.Kakao_Login.LoginActivity;
+import com.example.lkj.bicycleproject.ListView.AgeAdapter;
+import com.example.lkj.bicycleproject.ListView.AgeList;
 import com.kakao.auth.ErrorCode;
 import com.kakao.network.ErrorResult;
 import com.kakao.usermgmt.UserManagement;
@@ -26,15 +32,30 @@ import com.kakao.util.helper.log.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 public class SettingActivity extends AppCompatActivity {
     private String kakaoId;
+
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_setting);
+
         requestMe();
+
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        setSupportActionBar(toolbar);
+
+        // add back arrow to toolbar
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
     }
 
     protected void requestMe() { //유저의 정보를 받아오는 함수
@@ -73,6 +94,8 @@ public class SettingActivity extends AppCompatActivity {
         });
     }
 
+    /*
+
     public void logout(View v){
         UserManagement.requestLogout(new LogoutResponseCallback() {
             @Override
@@ -84,12 +107,10 @@ public class SettingActivity extends AppCompatActivity {
             }
         });
     }
+    */
 
-    public void testing(View v){
-        Intent intent = new Intent(SettingActivity.this, UserInfoSettingActivity.class);
-        startActivity(intent);
-    }
 
+    /*
     public void unlink(View v) {
         final String appendMessage = getString(R.string.com_kakao_confirm_unlink);
         new AlertDialog.Builder(this)
@@ -138,6 +159,67 @@ public class SettingActivity extends AppCompatActivity {
                         }).show();
 
     }
+    */
+
+    public void logOut(View view){
+        UserManagement.requestLogout(new LogoutResponseCallback() {
+            @Override
+            public void onCompleteLogout() {
+                Intent intent = new Intent(SettingActivity.this, LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                finish();
+            }
+        });
+    }
+
+    public void unlink(View view){
+        final String appendMessage = getString(R.string.com_kakao_confirm_unlink);
+        new AlertDialog.Builder(SettingActivity.this)
+                .setMessage(appendMessage)
+                .setPositiveButton(getString(R.string.com_kakao_ok_button),
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                UserManagement.requestUnlink(new UnLinkResponseCallback() {
+                                    @Override
+                                    public void onFailure(ErrorResult errorResult) {
+                                    }
+
+                                    @Override
+                                    public void onSessionClosed(ErrorResult errorResult) {
+                                        startActivity(new Intent(SettingActivity.this, LoginActivity.class));
+                                        finish();
+                                    }
+
+                                    @Override
+                                    public void onNotSignedUp() {
+                                        startActivity(new Intent(SettingActivity.this, KakaoSignupActivity.class));
+                                        finish();
+                                    }
+
+                                    @Override
+                                    public void onSuccess(Long result) {
+                                        JSONObject json = new JSONObject();
+                                        try {
+                                            json.put("kakao",kakaoId);
+                                            new Unlink().execute(getResources().getString(R.string.server_ip) + "/Unlink.php", json.toString());
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                });
+                                dialog.dismiss();
+                            }
+                        })
+                .setNegativeButton(getString(R.string.com_kakao_cancel_button),
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        }).show();
+    }
 
     private class Unlink extends AsyncTask<String, Void, JSONObject> {
         protected JSONObject doInBackground(String... urls) {
@@ -176,5 +258,14 @@ public class SettingActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // handle arrow click here
+        if (item.getItemId() == android.R.id.home) {
+            finish(); // close this activity and return to preview activity (if there is any)
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

@@ -1,13 +1,22 @@
 package com.example.lkj.bicycleproject.RecyclerView;
 
 /**
- * Created by leegunjoon on 2016. 12. 10..
+ * Created by leegunjoon on 2016. 12. 17..
  */
-public class Row {
+public class RecordRow {
 
     private String id;
     private String title;
     private String image;
+    private boolean authed = false;
+
+    public boolean getAuthed(){
+        return authed;
+    }
+
+    public void setAuthed(boolean authed){
+        this.authed =authed;
+    }
 
     public String getId(){
         return id;

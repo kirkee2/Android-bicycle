@@ -14,6 +14,7 @@
 
 
     <!-- TODO: Update blank fragment layout -->
+
         <android.support.v7.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -21,6 +22,24 @@
             android:id="@+id/recycler_view"
             android:scrollbars="vertical">
         </android.support.v7.widget.RecyclerView>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#FFFFFF">
+
+            <ImageButton
+                android:layout_width="60dp"
+                android:layout_height="50dp"
+                android:id="@+id/qrCode"
+                android:scaleType="fitXY"
+                android:layout_gravity="center_horizontal"
+                android:src="@drawable/ic_photo_camera_black_24dp"
+                android:onClick="qrCode"
+                android:background="#FFFFFF"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true" />
+        </RelativeLayout>
 
     </LinearLayout>
 

@@ -250,6 +250,11 @@ public class StartActivity extends AppCompatActivity {
                 case 0: // Fragment # 0 - This will show FirstFragment
                     return new StartSpeedFragment();
                 case 1: // Fragment # 0 - This will show FirstFragment different title
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     return new StartMapFragment();
                 default:
                     return null;
@@ -498,6 +503,16 @@ public class StartActivity extends AppCompatActivity {
 
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void onStop(){
+        super.onStop();
+
+        mTimer.cancel();
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            permissionCheck();
+        }
+        locationManager.removeUpdates(locationListener);
     }
 
     protected void onDestroy() {

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.PointF;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,7 @@ import android.widget.Toast;
 
 import com.example.lkj.bicycleproject.Connection.WebHook;
 import com.example.lkj.bicycleproject.R;
+import com.example.lkj.bicycleproject.StartActivity;
 import com.skp.Tmap.TMapGpsManager;
 import com.skp.Tmap.TMapLabelInfo;
 import com.skp.Tmap.TMapMarkerItem;
@@ -28,6 +30,8 @@ import java.util.ArrayList;
 public class StartMapFragment extends Fragment implements TMapGpsManager.onLocationChangedCallback{
 
     private RelativeLayout contentView = null;
+
+    private FloatingActionButton btSpeed;
 
 
     private TMapView mMapView = null;
@@ -84,13 +88,20 @@ public class StartMapFragment extends Fragment implements TMapGpsManager.onLocat
 
         //contentView.addView(view, new LinearLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
 
+        btSpeed = (FloatingActionButton)view.findViewById(R.id.btSpeed);
+
+        btSpeed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((StartActivity)getActivity()).getViewPager().setCurrentItem(0);
+            }
+        });
 
         handler = new android.os.Handler();
 
         mContext = getActivity();
 
         mMapView = new TMapView(getActivity());
-
 
         //contentView.removeAllViews();
         contentView.addView(mMapView, new LinearLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));

@@ -1,5 +1,6 @@
 package com.example.lkj.bicycleproject.RecyclerView;
 
+
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -30,16 +31,15 @@ import java.util.List;
 /**
  * Created by leegunjoon on 2016. 12. 10..
  */
-public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.ViewHolder> {
+public class RoadRecyclerAdapter extends RecyclerView.Adapter<RoadRecyclerAdapter.ViewHolder> {
 
-    private List<Row> rowList;
+    private List<RoadRow> roadRowList;
     private int itemLayout;
     private AQuery aquery;
 
 
-    public MyRecyclerAdapter(List<Row> items, int itemLayout) {
-
-        this.rowList = items;
+    public RoadRecyclerAdapter(List<RoadRow> items, int itemLayout) {
+        this.roadRowList = items;
         this.itemLayout = itemLayout;
     }
 
@@ -55,14 +55,13 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.Vi
     public void onBindViewHolder(final ViewHolder viewHolder, int position) {
 
 
-        final Row item = rowList.get(position);
+        final RoadRow item = roadRowList.get(position);
         viewHolder.textTitle.setText(item.getTitle());
-
+        viewHolder.watch.setText(item.getWatch()+"");
         final Handler mHandler = new Handler();
 
         Thread countThread = new Thread("Count Thread") {
             public void run() {
-
                 try {
                     URL url = new URL(item.getImage());
                     URLConnection conn = url.openConnection();
@@ -76,7 +75,6 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.Vi
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
-// 현재까지 카운트 된 수를 텍스트뷰에 출력한다.
                         Picasso.with(viewHolder.img.getContext()).load(item.getImage()).into(viewHolder.img);
 
                     }
@@ -85,54 +83,37 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.Vi
         };
         countThread.start();
 
-        /*
-        try {
-            URL url = new URL(item.getImage());
-            URLConnection conn = url.openConnection();
-            conn.connect();
-            BufferedInputStream bis = new BufferedInputStream(conn.getInputStream());
-            Bitmap bm = BitmapFactory.decodeStream(bis);
-            bis.close();
-            viewHolder.img.getContext();
-
-            Picasso.with(viewHolder.img.getContext()).load(item.getImage()).into(viewHolder.img);
-
-            new WebHook().execute("2"+ item.getImage());
-            //viewHolder.img.setImageBitmap(bm);
-        } catch (Exception e) {
-
-            new WebHook().execute("3" +e.toString());
-        }
-        */
         viewHolder.itemView.setTag(item);
 
     }
 
     @Override
     public int getItemCount() {
-        return rowList.size();
+        return roadRowList.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         public ImageView img;
         public TextView textTitle;
+        public TextView watch;
 
         public ViewHolder(View itemView) {
             super(itemView);
 
             img = (ImageView) itemView.findViewById(R.id.image);
             textTitle = (TextView) itemView.findViewById(R.id.title);
+            watch = (TextView) itemView.findViewById(R.id.watch);
 
         }
 
     }
 
     public void clearData() {
-        int size = this.rowList.size();
+        int size = this.roadRowList.size();
         if (size > 0) {
             for (int i = 0; i < size; i++) {
-                this.rowList.remove(0);
+                this.roadRowList.remove(0);
             }
 
             this.notifyItemRangeRemoved(0, size);

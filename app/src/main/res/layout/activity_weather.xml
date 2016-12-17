@@ -23,7 +23,7 @@
             android:layout_centerHorizontal="true"
             android:layout_gravity="center"
             android:gravity="center"
-            android:text="어플 이름"
+            android:text="날씨"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textSize="30sp" />
 

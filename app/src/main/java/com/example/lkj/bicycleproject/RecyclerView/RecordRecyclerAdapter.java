@@ -4,42 +4,31 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Handler;
-import android.os.Message;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.androidquery.AQuery;
-import com.example.lkj.bicycleproject.Connection.Connect;
-import com.example.lkj.bicycleproject.Connection.WebHook;
 import com.example.lkj.bicycleproject.R;
 import com.squareup.picasso.Picasso;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
 
-/**
- * Created by leegunjoon on 2016. 12. 10..
- */
-public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.ViewHolder> {
+public class RecordRecyclerAdapter extends RecyclerView.Adapter<RecordRecyclerAdapter.ViewHolder> {
 
-    private List<Row> rowList;
+    private List<RecordRow> recordRowList;
     private int itemLayout;
     private AQuery aquery;
 
 
-    public MyRecyclerAdapter(List<Row> items, int itemLayout) {
-
-        this.rowList = items;
+    public RecordRecyclerAdapter(List<RecordRow> items, int itemLayout) {
+        this.recordRowList = items;
         this.itemLayout = itemLayout;
     }
 
@@ -55,14 +44,18 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.Vi
     public void onBindViewHolder(final ViewHolder viewHolder, int position) {
 
 
-        final Row item = rowList.get(position);
+        final RecordRow item = recordRowList.get(position);
         viewHolder.textTitle.setText(item.getTitle());
+        if(item.getAuthed()){
+            viewHolder.check.setVisibility(View.VISIBLE);
+        }else {
+            viewHolder.check.setVisibility(View.INVISIBLE);
+        }
 
         final Handler mHandler = new Handler();
 
         Thread countThread = new Thread("Count Thread") {
             public void run() {
-
                 try {
                     URL url = new URL(item.getImage());
                     URLConnection conn = url.openConnection();
@@ -76,7 +69,6 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.Vi
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
-// 현재까지 카운트 된 수를 텍스트뷰에 출력한다.
                         Picasso.with(viewHolder.img.getContext()).load(item.getImage()).into(viewHolder.img);
 
                     }
@@ -85,54 +77,37 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.Vi
         };
         countThread.start();
 
-        /*
-        try {
-            URL url = new URL(item.getImage());
-            URLConnection conn = url.openConnection();
-            conn.connect();
-            BufferedInputStream bis = new BufferedInputStream(conn.getInputStream());
-            Bitmap bm = BitmapFactory.decodeStream(bis);
-            bis.close();
-            viewHolder.img.getContext();
-
-            Picasso.with(viewHolder.img.getContext()).load(item.getImage()).into(viewHolder.img);
-
-            new WebHook().execute("2"+ item.getImage());
-            //viewHolder.img.setImageBitmap(bm);
-        } catch (Exception e) {
-
-            new WebHook().execute("3" +e.toString());
-        }
-        */
         viewHolder.itemView.setTag(item);
 
     }
 
     @Override
     public int getItemCount() {
-        return rowList.size();
+        return recordRowList.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         public ImageView img;
         public TextView textTitle;
+        public ImageView check;
 
         public ViewHolder(View itemView) {
             super(itemView);
 
             img = (ImageView) itemView.findViewById(R.id.image);
             textTitle = (TextView) itemView.findViewById(R.id.title);
+            check = (ImageView) itemView.findViewById(R.id.check);
 
         }
 
     }
 
     public void clearData() {
-        int size = this.rowList.size();
+        int size = this.recordRowList.size();
         if (size > 0) {
             for (int i = 0; i < size; i++) {
-                this.rowList.remove(0);
+                this.recordRowList.remove(0);
             }
 
             this.notifyItemRangeRemoved(0, size);

@@ -1,13 +1,22 @@
 package com.example.lkj.bicycleproject.RecyclerView;
 
 /**
- * Created by leegunjoon on 2016. 12. 10..
+ * Created by leegunjoon on 2016. 12. 17..
  */
-public class Row {
+public class RoadRow {
 
     private String id;
     private String title;
     private String image;
+    private int watch;
+
+    public int getWatch(){
+        return watch;
+    }
+
+    public void setWatch(int id){
+        this.watch =watch;
+    }
 
     public String getId(){
         return id;

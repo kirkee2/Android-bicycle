@@ -3,6 +3,8 @@ package com.example.lkj.bicycleproject;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 
 import com.example.lkj.bicycleproject.Connection.WebHook;
 import com.example.lkj.bicycleproject.Kakao_Login.LoginActivity;
@@ -15,12 +17,25 @@ import com.kakao.util.helper.log.Logger;
 
 public class UserInfoSettingActivity extends AppCompatActivity {
 
+    private Toolbar toolbar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_info_setting);
 
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+
         requestMe();
+
+        setSupportActionBar(toolbar);
+
+        // add back arrow to toolbar
+        if (getSupportActionBar() != null){
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
     }
 
 
@@ -36,7 +51,6 @@ public class UserInfoSettingActivity extends AppCompatActivity {
                     finish();
                 } else {
                     Intent intent = new Intent(UserInfoSettingActivity.this, LoginActivity.class);
-                    new WebHook().execute("22222222222",null,null);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
                     finish();
@@ -46,7 +60,6 @@ public class UserInfoSettingActivity extends AppCompatActivity {
             @Override
             public void onSessionClosed(ErrorResult errorResult) {
                 Intent intent = new Intent(UserInfoSettingActivity.this, LoginActivity.class);
-                new WebHook().execute("333333333     " + errorResult,null,null);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
                 finish();
@@ -60,5 +73,14 @@ public class UserInfoSettingActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // handle arrow click here
+        if (item.getItemId() == android.R.id.home) {
+            finish(); // close this activity and return to preview activity (if there is any)
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }
