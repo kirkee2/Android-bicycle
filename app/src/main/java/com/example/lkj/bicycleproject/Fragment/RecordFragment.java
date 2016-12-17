@@ -1,16 +1,21 @@
 package com.example.lkj.bicycleproject.Fragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.media.Image;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +34,7 @@ import com.example.lkj.bicycleproject.RecyclerView.RoadRecyclerAdapter;
 import com.example.lkj.bicycleproject.RecyclerView.RoadRow;
 import com.example.lkj.bicycleproject.RecyclerView.Row;
 import com.example.lkj.bicycleproject.StartActivity;
+import com.google.zxing.client.android.Intents;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.kakao.auth.ErrorCode;
 import com.kakao.network.ErrorResult;
@@ -36,6 +42,7 @@ import com.kakao.usermgmt.UserManagement;
 import com.kakao.usermgmt.callback.MeResponseCallback;
 import com.kakao.usermgmt.response.model.UserProfile;
 import com.kakao.util.helper.log.Logger;
+import com.squareup.otto.Subscribe;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -46,12 +53,12 @@ import java.util.List;
 
 public class RecordFragment extends Fragment {
 
-    private RecyclerView recyclerView;
-    private String kakaoId;
-    private ArrayList<Boolean> auth;
-    private List<RecordRow> recordList;
+    private static RecyclerView recyclerView;
+    private static String kakaoId;
+    private static ArrayList<Boolean> auth;
+    private static List<RecordRow> recordList;
     private ImageButton qrCode;
-
+    static FragmentActivity activity;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -62,6 +69,8 @@ public class RecordFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_record, container, false);
 
+        activity = (FragmentActivity)view.getContext();
+
         auth = new ArrayList<Boolean>();
 
         auth.add(false);
@@ -69,35 +78,42 @@ public class RecordFragment extends Fragment {
         auth.add(false);
 
         requestMe();
-        recyclerView = (RecyclerView)view.findViewById(R.id.recycler_view);
-        qrCode = (ImageButton)view.findViewById(R.id.qrCode);
-        //imageButton = (ImageButton)view.findViewById(R.id.imageButton2);
-
-        /*
-        recyclerView.addOnItemTouchListener(
-                new RecyclerItemClickListener(getActivity().getApplicationContext(), recyclerView ,new RecyclerItemClickListener.OnItemClickListener() {
-                    @Override public void onItemClick(View view, int position) {
-                    }
-
-                    @Override public void onLongItemClick(View view, int position) {
-                        // do whatever
-                    }
-                })
-        );
-        */
+        recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
+        qrCode = (ImageButton) view.findViewById(R.id.qrCode);
 
         qrCode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                Intent intent = new Intent("com.google.zxing.client.android.SCAN");
-                startActivity(intent);
-                //new IntentIntegrator(getActivity()).initiateScan();
+                IntentIntegrator integrator = new IntentIntegrator(getActivity());
+                integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES);
+
+                // QR Code Capture Activity Orientation Set : degree unit
+                integrator.setOrientation(90);
+
+                // Scan View finder size : pixel unit
+                integrator.addExtra(Intents.Scan.HEIGHT, 600);
+                integrator.addExtra(Intents.Scan.WIDTH, 600);
+
+                // Capture View Start
+                integrator.initiateScan();
             }
         });
 
 
         return view;
+    }
+
+
+    static public void Refresh(){
+        JSONObject json = new JSONObject();
+
+        try {
+            json.put("kakao", kakaoId);
+            new UserAuthInfo().execute("http://kirkee2.cafe24.com/UserAuthInfo.php", json.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     protected void requestMe() { //유저의 정보를 받아오는 함수
@@ -148,7 +164,38 @@ public class RecordFragment extends Fragment {
         });
     }
 
-    private class AuthInfo extends AsyncTask<String, Void, JSONArray> {
+    private class AuthCheck extends AsyncTask<String, Void, JSONObject> {
+        protected JSONObject doInBackground(String... urls) {
+
+            try {
+                JSONObject jsonObj = new JSONObject(urls[1]);
+
+                Connect con = new Connect(urls[0]);
+
+                return con.postJsonObject(con.getURL(), jsonObj);
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        protected void onPostExecute(JSONObject result) {
+            if (result == null) {
+            } else {
+                JSONObject json = new JSONObject();
+
+
+                try {
+                    json.put("kakao", kakaoId);
+                    new UserAuthInfo().execute(getResources().getString(R.string.server_ip) + "/UserAuthInfo.php", json.toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private static class AuthInfo extends AsyncTask<String, Void, JSONArray> {
         protected JSONArray doInBackground(String... urls) {
 
             try {
@@ -169,18 +216,17 @@ public class RecordFragment extends Fragment {
                 try {
                     JSONObject jsonTmp = (JSONObject) result.get(0);
 
-                    if(jsonTmp.getString("code").compareTo("0") == 0){
+                    if (jsonTmp.getString("code").compareTo("0") == 0) {
                         JSONArray jsonArray = new JSONArray();
-                        for(int i = 1 ; i < result.length() ; i++){
+                        for (int i = 1; i < result.length(); i++) {
                             JSONObject tmp = (JSONObject) result.get(i);
 
-                            tmp.put("auth",auth.get(i-1));
+                            tmp.put("auth", auth.get(i - 1));
                             jsonArray.put(tmp);
                         }
 
                         initData(result);
-                    }else{
-                        Toast.makeText(getActivity().getApplicationContext(),"서버 에러",Toast.LENGTH_SHORT).show();
+                    } else {
                     }
 
                 } catch (JSONException e) {
@@ -190,7 +236,7 @@ public class RecordFragment extends Fragment {
         }
     }
 
-    private class UserAuthInfo extends AsyncTask<String, Void, JSONObject> {
+    private static class UserAuthInfo extends AsyncTask<String, Void, JSONObject> {
         protected JSONObject doInBackground(String... urls) {
 
             try {
@@ -209,24 +255,24 @@ public class RecordFragment extends Fragment {
             if (result == null) {
             } else {
                 try {
-                    if(result.getString("code").compareTo("0") == 0) {
-                        if(result.getString("auth1").compareTo("1") == 0){
-                            auth.set(0,true);
+                    if (result.getString("code").compareTo("0") == 0) {
+                        if (result.getString("auth1").compareTo("1") == 0) {
+                            auth.set(0, true);
                         }
-                        if(result.getString("auth2").compareTo("1") == 0){
-                            auth.set(1,true);
+                        if (result.getString("auth2").compareTo("1") == 0) {
+                            auth.set(1, true);
                         }
-                        if(result.getString("auth3").compareTo("1") == 0){
-                            auth.set(2,true);
+                        if (result.getString("auth3").compareTo("1") == 0) {
+                            auth.set(2, true);
                         }
-                    }else if(result.getString("code").compareTo("1") == 0) {
+                    } else if (result.getString("code").compareTo("1") == 0) {
                     }
 
                     JSONObject json = new JSONObject();
 
                     try {
                         json.put("hoho", "hoho");
-                        new AuthInfo().execute(getResources().getString(R.string.server_ip) + "/AuthInfo.php", json.toString());
+                        new AuthInfo().execute("http://kirkee2.cafe24.com/AuthInfo.php", json.toString());
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -259,13 +305,13 @@ public class RecordFragment extends Fragment {
     }
     */
 
-    private void initData(JSONArray jsonArray){
+    private static void initData(JSONArray jsonArray) {
 
         //recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
 
         recordList = new ArrayList<RecordRow>();
 
-        for(int i = 0 ; i < jsonArray.length() ; i++){
+        for (int i = 0; i < jsonArray.length(); i++) {
             try {
                 JSONObject jsonObject = (JSONObject) jsonArray.get(i);
 
@@ -273,7 +319,7 @@ public class RecordFragment extends Fragment {
 
                 recordRow.setTitle(jsonObject.getString("title"));
                 recordRow.setId(jsonObject.getString("id"));
-                recordRow.setImage("http://kirkee2.cafe24.com/authImage/auth"+jsonObject.getString("id")+".png");
+                recordRow.setImage("http://kirkee2.cafe24.com/authImage/auth" + jsonObject.getString("id") + ".png");
                 recordRow.setAuthed(jsonObject.getBoolean("auth"));
                 recordList.add(recordRow);
             } catch (JSONException e) {
@@ -281,8 +327,8 @@ public class RecordFragment extends Fragment {
             }
         }
 
-        recyclerView.setAdapter(new RecordRecyclerAdapter(recordList,R.layout.record_row));
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
+        recyclerView.setAdapter(new RecordRecyclerAdapter(recordList, R.layout.record_row));
+        recyclerView.setLayoutManager(new GridLayoutManager(activity.getApplicationContext(), 2));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
     }

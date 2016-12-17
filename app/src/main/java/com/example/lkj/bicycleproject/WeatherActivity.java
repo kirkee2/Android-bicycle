@@ -119,13 +119,13 @@ public class WeatherActivity extends AppCompatActivity {
                     double lat = location.getLatitude();
                     double lng = location.getLongitude();
 
-                    addressInfo = getAddressArray(Double.parseDouble(String.format("%.3f", lat)),Double.parseDouble(String.format("%.3f", lng)));
+                    addressInfo = getAddressArray(Double.parseDouble(String.format("%.2f", lat)),Double.parseDouble(String.format("%.2f", lng)));
 
                     address.setText(addressInfo.get(0) + " " + addressInfo.get(1) + " " + addressInfo.get(2));
 
                     new Weather().execute(addressInfo.get(0), addressInfo.get(1), addressInfo.get(2));
 
-                    Toast.makeText(getApplicationContext(),"onLocationChanged " + addressInfo.get(0) +" " + addressInfo.get(1) +" "+ addressInfo.get(2),Toast.LENGTH_LONG).show();
+                    //Toast.makeText(getApplicationContext(),"onLocationChanged " + addressInfo.get(0) +" " + addressInfo.get(1) +" "+ addressInfo.get(2),Toast.LENGTH_LONG).show();
 
                     infoLayout.setVisibility(View.INVISIBLE);
                     mainLayout.setVisibility(View.VISIBLE);
@@ -139,19 +139,19 @@ public class WeatherActivity extends AppCompatActivity {
             }
 
             public void onProviderEnabled(String provider) {
+
                 try {
-                    Thread.sleep(2000);
+                    Thread.sleep(1500);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-
                 Location lastKnownLocation = getLastKnownLocation();
 
                 if (lastKnownLocation != null) {
                     double lat = lastKnownLocation.getLatitude();
                     double lng = lastKnownLocation.getLongitude();
 
-                    addressInfo = getAddressArray(Double.parseDouble(String.format("%.3f", lat)),Double.parseDouble(String.format("%.3f", lng)));
+                    addressInfo = getAddressArray(Double.parseDouble(String.format("%.2f", lat)),Double.parseDouble(String.format("%.2f", lng)));
 
                     address.setText(addressInfo.get(0) + " " + addressInfo.get(1) + " " + addressInfo.get(2));
 
@@ -190,13 +190,13 @@ public class WeatherActivity extends AppCompatActivity {
             double lat = lastKnownLocation.getLatitude();
             double lng = lastKnownLocation.getLongitude();
 
-            addressInfo = getAddressArray(Double.parseDouble(String.format("%.3f", lat)),Double.parseDouble(String.format("%.3f", lng)));
+            addressInfo = getAddressArray(Double.parseDouble(String.format("%.2f", lat)),Double.parseDouble(String.format("%.2f", lng)));
 
             address.setText(addressInfo.get(0) + " " + addressInfo.get(1) + " " + addressInfo.get(2));
 
             new Weather().execute(addressInfo.get(0), addressInfo.get(1), addressInfo.get(2));
 
-            Toast.makeText(getApplicationContext(),"onCreate " + addressInfo.get(0) +" " + addressInfo.get(1) +" "+ addressInfo.get(2),Toast.LENGTH_LONG).show();
+            //Toast.makeText(getApplicationContext(),"onCreate " + addressInfo.get(0) +" " + addressInfo.get(1) +" "+ addressInfo.get(2),Toast.LENGTH_LONG).show();
 
             infoLayout.setVisibility(View.INVISIBLE);
             mainLayout.setVisibility(View.VISIBLE);
@@ -346,7 +346,7 @@ public class WeatherActivity extends AppCompatActivity {
 
         protected void onProgressUpdate(String... progress)
         {
-            Toast.makeText(getApplicationContext(),"디버깅 "+ progress[0]+"",Toast.LENGTH_LONG).show();
+            //Toast.makeText(getApplicationContext(),"디버깅 "+ progress[0]+"",Toast.LENGTH_LONG).show();
         }
 
         protected void onPostExecute(Document result) {
@@ -496,7 +496,7 @@ public class WeatherActivity extends AppCompatActivity {
                     double lat = lastKnownLocation.getLatitude();
                     double lng = lastKnownLocation.getLongitude();
 
-                    addressInfo = getAddressArray(Double.parseDouble(String.format("%.3f", lat)),Double.parseDouble(String.format("%.3f", lng)));
+                    addressInfo = getAddressArray(Double.parseDouble(String.format("%.2f", lat)),Double.parseDouble(String.format("%.2f", lng)));
 
                     address.setText(addressInfo.get(0) + " " + addressInfo.get(1) + " " + addressInfo.get(2));
 
@@ -516,7 +516,7 @@ public class WeatherActivity extends AppCompatActivity {
 
             @Override
             public void onPermissionDenied(ArrayList<String> deniedPermissions) {
-                Toast.makeText(WeatherActivity.this, "권한 승인 안됨." + deniedPermissions.toString(), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(WeatherActivity.this, "권한 승인 안됨." + deniedPermissions.toString(), Toast.LENGTH_SHORT).show();
             }
         };
 

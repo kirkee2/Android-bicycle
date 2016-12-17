@@ -14,7 +14,7 @@ public class RoadRow {
         return watch;
     }
 
-    public void setWatch(int id){
+    public void setWatch(int watch){
         this.watch =watch;
     }
 

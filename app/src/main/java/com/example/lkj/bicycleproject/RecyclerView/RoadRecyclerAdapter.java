@@ -35,7 +35,6 @@ public class RoadRecyclerAdapter extends RecyclerView.Adapter<RoadRecyclerAdapte
 
     private List<RoadRow> roadRowList;
     private int itemLayout;
-    private AQuery aquery;
 
 
     public RoadRecyclerAdapter(List<RoadRow> items, int itemLayout) {
@@ -120,23 +119,4 @@ public class RoadRecyclerAdapter extends RecyclerView.Adapter<RoadRecyclerAdapte
         }
     }
 
-    private class ImageFromUrl extends AsyncTask<String, Void, Bitmap> {
-        protected Bitmap doInBackground(String... urls) {
-            try {
-                URL url = new URL(urls[0]);
-                URLConnection conn = url.openConnection();
-                conn.connect();
-                BufferedInputStream bis = new BufferedInputStream(conn.getInputStream());
-                Bitmap bm = BitmapFactory.decodeStream(bis);
-                bis.close();
-                return bm;
-            } catch (Exception e) {
-                return null;
-            }
-        }
-
-        protected void onPostExecute(Bitmap result) {
-
-        }
-    }
 }

@@ -101,7 +101,7 @@ public class StartMapFragment extends Fragment implements TMapGpsManager.onLocat
 
         mContext = getActivity();
 
-        mMapView = new TMapView(getActivity());
+        mMapView = new TMapView(mContext);
 
         //contentView.removeAllViews();
         contentView.addView(mMapView, new LinearLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));

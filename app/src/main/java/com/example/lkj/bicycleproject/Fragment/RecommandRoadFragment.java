@@ -1,6 +1,7 @@
 package com.example.lkj.bicycleproject.Fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -25,6 +26,7 @@ import com.example.lkj.bicycleproject.RecyclerView.RecyclerItemClickListener;
 import com.example.lkj.bicycleproject.RecyclerView.RoadRecyclerAdapter;
 import com.example.lkj.bicycleproject.RecyclerView.RoadRow;
 import com.example.lkj.bicycleproject.RecyclerView.Row;
+import com.example.lkj.bicycleproject.RoadDetailActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -50,6 +52,19 @@ public class RecommandRoadFragment extends Fragment {
     }
 
     @Override
+    public void onResume(){
+        super.onResume();
+
+        JSONObject json = new JSONObject();
+
+        try {
+            json.put("hoho", "hoho");
+            new RoadInfo().execute(getResources().getString(R.string.server_ip) + "/RoadInfo.php", json.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_recommand_road, container, false);
 
@@ -60,7 +75,11 @@ public class RecommandRoadFragment extends Fragment {
         recyclerView.addOnItemTouchListener(
                 new RecyclerItemClickListener(getActivity().getApplicationContext(), recyclerView ,new RecyclerItemClickListener.OnItemClickListener() {
                     @Override public void onItemClick(View view, int position) {
-                        Toast.makeText(getActivity().getApplicationContext(),roadList.get(position).getTitle()+"     "+position,Toast.LENGTH_LONG).show();
+                        Intent intent = new Intent(getActivity(), RoadDetailActivity.class);
+
+                        intent.putExtra("id",roadList.get(position).getId());
+
+                        startActivity(intent);
                     }
 
                     @Override public void onLongItemClick(View view, int position) {
@@ -69,6 +88,7 @@ public class RecommandRoadFragment extends Fragment {
                 })
         );
 
+        /*
         JSONObject json = new JSONObject();
 
         try {
@@ -78,6 +98,7 @@ public class RecommandRoadFragment extends Fragment {
             e.printStackTrace();
         }
 
+*/
 
         return view;
     }
@@ -135,7 +156,7 @@ public class RecommandRoadFragment extends Fragment {
                 roadRow.setTitle(jsonObject.getString("title"));
                 roadRow.setId(jsonObject.getString("id"));
                 roadRow.setImage("http://kirkee2.cafe24.com/roadImage/road"+jsonObject.getString("id")+".png");
-                roadRow.setWatch(Integer.parseInt(jsonObject.getString("watch")));
+                roadRow.setWatch(jsonObject.getInt("watch"));
                 //new ImageFromUrl().execute("http://kirkee2.cafe24.com/roadImage/road"+jsonObject.getString("id")+".png");
 
                 //album.setImage("http://kirkee2.cafe24.com/roadImage/road"+jsonObject.getString("id")+".png");

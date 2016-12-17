@@ -9,11 +9,17 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
+import com.example.lkj.bicycleproject.Connection.WebHook;
 import com.example.lkj.bicycleproject.R;
+import com.google.zxing.client.android.Intents;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.skp.Tmap.TMapData;
 import com.skp.Tmap.TMapGpsManager;
 import com.skp.Tmap.TMapLabelInfo;
 import com.skp.Tmap.TMapMarkerItem;
@@ -36,6 +42,11 @@ public class FindRoadFragment extends Fragment implements TMapGpsManager.onLocat
     private double m_Latitude = 0;
     private double m_Longitude = 0;
     private boolean m_bShowMapIcon = false;
+    private Button start;
+    private Button end;
+    private TextView startText;
+    private TextView endText;
+
 
     private boolean m_bTrafficeMode = false;
     private boolean m_bSightVisible = false;
@@ -88,8 +99,54 @@ public class FindRoadFragment extends Fragment implements TMapGpsManager.onLocat
 
         mContext = getActivity();
 
-        mMapView = new TMapView(getActivity());
+        mMapView = new TMapView(mContext);
 
+        start = (Button)view.findViewById(R.id.start);
+        end = (Button)view.findViewById(R.id.end);
+        startText = (TextView) view.findViewById(R.id.startText);
+        endText = (TextView) view.findViewById(R.id.endText);
+
+        start.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final String strStart = startText.getText().toString();
+                TMapData tmapdata = new TMapData();
+
+                tmapdata.findAllPOI(strStart, new TMapData.FindAllPOIListenerCallback() {
+                    @Override
+                    public void onFindAllPOI(ArrayList<TMapPOIItem> poiItem) {
+                        for (int i = 0; i < poiItem.size(); i++) {
+                            TMapPOIItem  item = poiItem.get(i);
+
+                            new WebHook().execute("POI Name: " + item.getPOIName().toString() + ", " +
+                                    "Address: " + item.getPOIAddress().replace("null", "")  + ", " +
+                                    "Point: " + item.getPOIPoint().toString());
+                        }
+                    }
+                });
+            }
+        });
+
+        start.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final String strStart = startText.getText().toString();
+                TMapData tmapdata = new TMapData();
+
+                tmapdata.findAllPOI(strStart, new TMapData.FindAllPOIListenerCallback() {
+                    @Override
+                    public void onFindAllPOI(ArrayList<TMapPOIItem> poiItem) {
+                        for (int i = 0; i < poiItem.size(); i++) {
+                            TMapPOIItem  item = poiItem.get(i);
+
+                            new WebHook().execute("POI Name: " + item.getPOIName().toString() + ", " +
+                                    "Address: " + item.getPOIAddress().replace("null", "")  + ", " +
+                                    "Point: " + item.getPOIPoint().toString());
+                        }
+                    }
+                });
+            }
+        });
 
         //contentView.removeAllViews();
         contentView.addView(mMapView, new LinearLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));

@@ -1,5 +1,6 @@
 package com.example.lkj.bicycleproject;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -8,6 +9,7 @@ import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -20,6 +22,8 @@ import com.example.lkj.bicycleproject.Kakao_Login.KakaoSignupActivity;
 import com.example.lkj.bicycleproject.Kakao_Login.LoginActivity;
 import com.example.lkj.bicycleproject.ListView.AgeAdapter;
 import com.example.lkj.bicycleproject.ListView.AgeList;
+import com.google.zxing.client.android.Intents;
+import com.google.zxing.integration.android.IntentIntegrator;
 import com.kakao.auth.ErrorCode;
 import com.kakao.network.ErrorResult;
 import com.kakao.usermgmt.UserManagement;

@@ -42,6 +42,8 @@ import com.example.lkj.bicycleproject.Fragment.MainFragment;
 import com.example.lkj.bicycleproject.Fragment.RecommandRoadFragment;
 import com.example.lkj.bicycleproject.Fragment.RecordFragment;
 import com.example.lkj.bicycleproject.Kakao_Login.LoginActivity;
+import com.google.zxing.client.android.Intents;
+import com.google.zxing.integration.android.IntentIntegrator;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 import com.kakao.auth.ErrorCode;
@@ -52,6 +54,7 @@ import com.kakao.usermgmt.response.model.UserProfile;
 import com.kakao.util.helper.log.Logger;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -218,7 +221,7 @@ public class MainActivity extends AppCompatActivity {
         new TedPermission(this)
                 .setPermissionListener(permissionlistener)
                 .setDeniedMessage("권한을 승인하지 않으시면 이 서비스를 사용하실 수 없습니다.\n\n권한을 승인해주세요.")
-                .setPermissions(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
+                .setPermissions(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.CAMERA)
                 .check();
 
     }
@@ -381,6 +384,57 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case IntentIntegrator.REQUEST_CODE:
+                if (resultCode == Activity.RESULT_OK) {
+                    JSONObject json = new JSONObject();
+
+                    try {
+                        json.put("kakao", kakaoId);
+                        json.put("auth", data.getStringExtra(Intents.Scan.RESULT));
+                        new AuthCheck().execute(getResources().getString(R.string.server_ip) + "/AuthCheck.php", json.toString());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                } else {
+                }
+                break;
+            default:
+        }
+    }
+
+    private class AuthCheck extends AsyncTask<String, Void, JSONObject> {
+        protected JSONObject doInBackground(String... urls) {
+
+            try {
+                JSONObject jsonObj = new JSONObject(urls[1]);
+
+                Connect con = new Connect(urls[0]);
+
+                return con.postJsonObject(con.getURL(), jsonObj);
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        protected void onPostExecute(JSONObject result) {
+            if (result == null) {
+            } else {
+                JSONObject json = new JSONObject();
+                try {
+                    json.put("kakao", kakaoId);
+                    RecordFragment.Refresh();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
     public void onWeather(View view){
         Intent intent = new Intent(MainActivity.this,WeatherActivity.class);
         startActivity(intent);
@@ -404,5 +458,6 @@ public class MainActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
 
 }

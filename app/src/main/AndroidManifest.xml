@@ -8,8 +8,10 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.FLASHLIGHT" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
 
     <application
         android:name=".Kakao_Login.GlobalApplication"
@@ -81,6 +83,11 @@
         <activity
             android:name=".SaveRecordActivity"
             android:label="@string/title_activity_save_record"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".RoadDetailActivity" />
+        <activity
+            android:name=".FindRoadMapActivity"
+            android:label="@string/title_activity_find_road_map"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
