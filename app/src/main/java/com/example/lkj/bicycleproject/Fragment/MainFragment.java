@@ -95,6 +95,7 @@ public class MainFragment extends Fragment {
         });
 
         return view;
+
     }
 
 
@@ -102,6 +103,8 @@ public class MainFragment extends Fragment {
         UserManagement.requestMe(new MeResponseCallback() {
             @Override
             public void onFailure(ErrorResult errorResult) {
+
+                Toast.makeText(getActivity().getApplicationContext(),"세션이 종료됬습니다. 다시 로그인 해주세요.",Toast.LENGTH_LONG).show();
                 String message = "failed to get user info. msg=" + errorResult;
                 Logger.d(message);
 
@@ -118,6 +121,8 @@ public class MainFragment extends Fragment {
 
             @Override
             public void onSessionClosed(ErrorResult errorResult) {
+
+                Toast.makeText(getActivity().getApplicationContext(),"세션이 종료됬습니다. 다시 로그인 해주세요.",Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(getActivity(), LoginActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 startActivity(intent);
@@ -127,6 +132,7 @@ public class MainFragment extends Fragment {
             @Override
             public void onNotSignedUp() {
 
+                Toast.makeText(getActivity().getApplicationContext(),"세션이 종료됬습니다. 다시 로그인 해주세요.",Toast.LENGTH_LONG).show();
             } // 카카오톡 회원이 아닐 시 showSignup(); 호출해야함
 
             @Override

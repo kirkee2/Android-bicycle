@@ -472,7 +472,6 @@ public class SignUpActivity extends AppCompatActivity {
 
         protected void onPostExecute(JSONObject result) {
 
-            Toast.makeText(getApplicationContext(),"result = " + result,Toast.LENGTH_LONG).show();
             if (result == null) {
                 Toast.makeText(getApplicationContext(), "정보를 받는 도중 에러가 났습니다. 다시 한번 확인해주세요.", Toast.LENGTH_LONG).show();
             } else {
@@ -498,6 +497,8 @@ public class SignUpActivity extends AppCompatActivity {
         UserManagement.requestMe(new MeResponseCallback() {
             @Override
             public void onFailure(ErrorResult errorResult) {
+                Toast.makeText(getApplicationContext(),"세션이 종료됬습니다. 다시 로그인 해주세요.",Toast.LENGTH_LONG).show();
+
                 String message = "failed to get user info. msg=" + errorResult;
                 Logger.d(message);
 
@@ -514,6 +515,8 @@ public class SignUpActivity extends AppCompatActivity {
 
             @Override
             public void onSessionClosed(ErrorResult errorResult) {
+                Toast.makeText(getApplicationContext(),"세션이 종료됬습니다. 다시 로그인 해주세요.",Toast.LENGTH_LONG).show();
+
 
                 Intent intent = new Intent(SignUpActivity.this, LoginActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
@@ -522,7 +525,10 @@ public class SignUpActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onNotSignedUp() {} // 카카오톡 회원이 아닐 시 showSignup(); 호출해야함
+            public void onNotSignedUp() {
+                Toast.makeText(getApplicationContext(),"세션이 종료됬습니다. 다시 로그인 해주세요.",Toast.LENGTH_LONG).show();
+
+            } // 카카오톡 회원이 아닐 시 showSignup(); 호출해야함
 
             @Override
             public void onSuccess(UserProfile userProfile) {  //성공 시 userProfile 형태로 반환

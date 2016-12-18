@@ -120,6 +120,8 @@ public class RecordFragment extends Fragment {
         UserManagement.requestMe(new MeResponseCallback() {
             @Override
             public void onFailure(ErrorResult errorResult) {
+
+                Toast.makeText(getActivity().getApplicationContext(),"세션이 종료됬습니다. 다시 로그인 해주세요.",Toast.LENGTH_LONG).show();
                 String message = "failed to get user info. msg=" + errorResult;
                 Logger.d(message);
 
@@ -136,6 +138,7 @@ public class RecordFragment extends Fragment {
             public void onSessionClosed(ErrorResult errorResult) {
 
 
+                Toast.makeText(getActivity().getApplicationContext(),"세션이 종료됬습니다. 다시 로그인 해주세요.",Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(getActivity(), LoginActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 startActivity(intent);
@@ -145,10 +148,12 @@ public class RecordFragment extends Fragment {
             @Override
             public void onNotSignedUp() {
 
+                Toast.makeText(getActivity().getApplicationContext(),"세션이 종료됬습니다. 다시 로그인 해주세요.",Toast.LENGTH_LONG).show();
             } // 카카오톡 회원이 아닐 시 showSignup(); 호출해야함
 
             @Override
             public void onSuccess(UserProfile userProfile) {  //성공 시 userProfile 형태로 반환
+
                 kakaoId = userProfile.getId() + "";
 
                 JSONObject json = new JSONObject();

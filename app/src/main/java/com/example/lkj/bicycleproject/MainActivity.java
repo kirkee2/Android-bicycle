@@ -296,6 +296,8 @@ public class MainActivity extends AppCompatActivity {
         UserManagement.requestMe(new MeResponseCallback() {
             @Override
             public void onFailure(ErrorResult errorResult) {
+
+                Toast.makeText(getApplicationContext(),"세션이 종료됬습니다. 다시 로그인 해주세요.",Toast.LENGTH_LONG).show();
                 String message = "failed to get user info. msg=" + errorResult;
                 Logger.d(message);
 
@@ -312,6 +314,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onSessionClosed(ErrorResult errorResult) {
+                Toast.makeText(getApplicationContext(),"세션이 종료됬습니다. 다시 로그인 해주세요.",Toast.LENGTH_LONG).show();
 
 
                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
@@ -322,6 +325,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onNotSignedUp() {
+                Toast.makeText(getApplicationContext(),"세션이 종료됬습니다. 다시 로그인 해주세요.",Toast.LENGTH_LONG).show();
 
             } // 카카오톡 회원이 아닐 시 showSignup(); 호출해야함
 
