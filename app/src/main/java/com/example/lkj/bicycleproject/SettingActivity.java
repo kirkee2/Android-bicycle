@@ -193,12 +193,14 @@ public class SettingActivity extends AppCompatActivity {
                                     @Override
                                     public void onSessionClosed(ErrorResult errorResult) {
                                         startActivity(new Intent(SettingActivity.this, LoginActivity.class));
+                                        Toast.makeText(getApplicationContext(),"세션이 종료되었습니다. 다시 로그인해주세요.",Toast.LENGTH_LONG).show();
                                         finish();
                                     }
 
                                     @Override
                                     public void onNotSignedUp() {
                                         startActivity(new Intent(SettingActivity.this, KakaoSignupActivity.class));
+                                        Toast.makeText(getApplicationContext(),"세션이 종료되었습니다. 다시 로그인해주세요.",Toast.LENGTH_LONG).show();
                                         finish();
                                     }
 

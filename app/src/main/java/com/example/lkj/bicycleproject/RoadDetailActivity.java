@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.androidquery.AQuery;
 import com.example.lkj.bicycleproject.Connection.Connect;
+import com.example.lkj.bicycleproject.Connection.WebHook;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,13 +22,11 @@ public class RoadDetailActivity extends AppCompatActivity {
 
     private Toolbar toolbar;
     private String roadId;
-    private String titleString;
-    private String startLatitude;
-    private String startLongitude;
-    private String endLatitude;
-    private String endLongitude;
+    private double startLatitude;
+    private double startLongitude;
+    private double endLatitude;
+    private double endLongitude;
     private String authCenter;
-    private String detailString;
 
     private TextView title;
     private TextView detail;
@@ -101,6 +100,11 @@ public class RoadDetailActivity extends AppCompatActivity {
                         detail.setText(result.getString("detail"));
                         aquery.id( img ).image("http://kirkee2.cafe24.com/roadImage/road"+roadId+".png" );
                         watch.setText(result.getInt("watch")+"");
+                        startLatitude = result.getDouble("startLatitude");
+                        startLongitude = result.getDouble("startLongitude");
+                        endLatitude = result.getDouble("endLatitude");
+                        endLongitude = result.getDouble("endLongitude");
+                        authCenter = result.getString("authCenter");
                     }else if(result.getString("code").compareTo("1") == 0) {
                     }else{
                     }
@@ -122,6 +126,14 @@ public class RoadDetailActivity extends AppCompatActivity {
 
     public void onStart(View view){
         Intent intent = new Intent(RoadDetailActivity.this,StartActivity.class);
+
+        Bundle bundleData = new Bundle();
+        bundleData.putDouble("startLat", startLatitude);
+        bundleData.putDouble("startLng", startLongitude);
+        bundleData.putDouble("endLat", endLatitude);
+        bundleData.putDouble("endLng", endLongitude);
+
+        intent.putExtra("point",bundleData);
 
         startActivity(intent);
     }

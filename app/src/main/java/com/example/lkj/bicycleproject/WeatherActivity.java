@@ -89,7 +89,7 @@ public class WeatherActivity extends AppCompatActivity {
         wind = (TextView) findViewById(R.id.wind);
         humidity = (TextView) findViewById(R.id.humidity);
         record = (TextView) findViewById(R.id.record);
-        address = (TextView) findViewById(R.id.address);
+        address = (TextView) findViewById(R.id.title);
         time = (TextView) findViewById(R.id.time);
         temperatureKor = (TextView) findViewById(R.id.temperatureKor);
         windKor = (TextView) findViewById(R.id.windKor);
@@ -119,9 +119,9 @@ public class WeatherActivity extends AppCompatActivity {
                     double lat = location.getLatitude();
                     double lng = location.getLongitude();
 
-                    addressInfo = getAddressArray(Double.parseDouble(String.format("%.2f", lat)),Double.parseDouble(String.format("%.2f", lng)));
+                    addressInfo = getAddressArray(Double.parseDouble(String.format("%.3f", lat)),Double.parseDouble(String.format("%.3f", lng)));
 
-                    address.setText(addressInfo.get(0) + " " + addressInfo.get(1) + " " + addressInfo.get(2));
+                    address.setText(addressInfo.get(0) + " " + addressInfo.get(1));
 
                     new Weather().execute(addressInfo.get(0), addressInfo.get(1), addressInfo.get(2));
 
@@ -151,9 +151,9 @@ public class WeatherActivity extends AppCompatActivity {
                     double lat = lastKnownLocation.getLatitude();
                     double lng = lastKnownLocation.getLongitude();
 
-                    addressInfo = getAddressArray(Double.parseDouble(String.format("%.2f", lat)),Double.parseDouble(String.format("%.2f", lng)));
+                    addressInfo = getAddressArray(Double.parseDouble(String.format("%.3f", lat)),Double.parseDouble(String.format("%.3f", lng)));
 
-                    address.setText(addressInfo.get(0) + " " + addressInfo.get(1) + " " + addressInfo.get(2));
+                    address.setText(addressInfo.get(0) + " " + addressInfo.get(1));
 
                     new Weather().execute(addressInfo.get(0), addressInfo.get(1), addressInfo.get(2));
 
@@ -190,9 +190,9 @@ public class WeatherActivity extends AppCompatActivity {
             double lat = lastKnownLocation.getLatitude();
             double lng = lastKnownLocation.getLongitude();
 
-            addressInfo = getAddressArray(Double.parseDouble(String.format("%.2f", lat)),Double.parseDouble(String.format("%.2f", lng)));
+            addressInfo = getAddressArray(Double.parseDouble(String.format("%.3f", lat)),Double.parseDouble(String.format("%.3f", lng)));
 
-            address.setText(addressInfo.get(0) + " " + addressInfo.get(1) + " " + addressInfo.get(2));
+            address.setText(addressInfo.get(0) + " " + addressInfo.get(1));
 
             new Weather().execute(addressInfo.get(0), addressInfo.get(1), addressInfo.get(2));
 
@@ -496,9 +496,9 @@ public class WeatherActivity extends AppCompatActivity {
                     double lat = lastKnownLocation.getLatitude();
                     double lng = lastKnownLocation.getLongitude();
 
-                    addressInfo = getAddressArray(Double.parseDouble(String.format("%.2f", lat)),Double.parseDouble(String.format("%.2f", lng)));
+                    addressInfo = getAddressArray(Double.parseDouble(String.format("%.3f", lat)),Double.parseDouble(String.format("%.3f", lng)));
 
-                    address.setText(addressInfo.get(0) + " " + addressInfo.get(1) + " " + addressInfo.get(2));
+                    address.setText(addressInfo.get(0) + " " + addressInfo.get(1));
 
                     new Weather().execute(addressInfo.get(0), addressInfo.get(1), addressInfo.get(2));
 

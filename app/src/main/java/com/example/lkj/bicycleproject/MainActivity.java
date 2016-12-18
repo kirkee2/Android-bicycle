@@ -276,11 +276,6 @@ public class MainActivity extends AppCompatActivity {
             Intent intent;
 
             switch (position) {
-                case 0:
-                    intent = new Intent(MainActivity.this,UserInfoSettingActivity.class);
-                    startActivity(intent);
-                    drawer.closeDrawer(navList);
-                    break;
                 case 1:
                     intent = new Intent(MainActivity.this,SettingActivity.class);
                     startActivity(intent);
@@ -408,7 +403,6 @@ public class MainActivity extends AppCompatActivity {
 
     private class AuthCheck extends AsyncTask<String, Void, JSONObject> {
         protected JSONObject doInBackground(String... urls) {
-
             try {
                 JSONObject jsonObj = new JSONObject(urls[1]);
 

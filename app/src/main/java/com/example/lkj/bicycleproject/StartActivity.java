@@ -20,6 +20,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +28,9 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.lkj.bicycleproject.Connection.Connect;
 import com.example.lkj.bicycleproject.Connection.WebHook;
+import com.example.lkj.bicycleproject.Fragment.MainFragment;
 import com.example.lkj.bicycleproject.Fragment.StartMapFragment;
 import com.example.lkj.bicycleproject.Fragment.StartSpeedFragment;
 import com.example.lkj.bicycleproject.Kakao_Login.LoginActivity;
@@ -41,6 +44,7 @@ import com.kakao.usermgmt.callback.MeResponseCallback;
 import com.kakao.usermgmt.response.model.UserProfile;
 import com.kakao.util.helper.log.Logger;
 import com.mikhaellopez.circularimageview.CircularImageView;
+import com.skp.Tmap.TMapPoint;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -93,7 +97,30 @@ public class StartActivity extends AppCompatActivity {
 
     private SpeedView speedometer;
 
+    private boolean isBundle = false;
     FragmentTransaction fragmentTransaction;
+
+    private double startLat = 0 ;
+    private double startLng = 0;
+    private double endLat = 0;
+    private double endLng = 0;
+
+    public double getStartLat(){
+        return startLat;
+    }
+    public double getStartLng(){
+        return startLng;
+    }
+    public double getEndLat(){
+        return endLat;
+    }
+    public double getEndLng(){
+        return endLng;
+    }
+
+    public boolean getIsBundle(){
+        return isBundle;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,38 +129,48 @@ public class StartActivity extends AppCompatActivity {
 
         requestMe();
 
-        distance = (TextView)findViewById(R.id.distance);
-        timeRecord = (TextView)findViewById(R.id.timeRecord);
-        calory = (TextView)findViewById(R.id.calory);
-        startPause = (Button)findViewById(R.id.start);
-        stop = (Button)findViewById(R.id.stop);
+        distance = (TextView) findViewById(R.id.distance);
+        timeRecord = (TextView) findViewById(R.id.timeRecord);
+        calory = (TextView) findViewById(R.id.calory);
+        startPause = (Button) findViewById(R.id.start);
+        stop = (Button) findViewById(R.id.stop);
 
         pager = (ViewPager) findViewById(R.id.startPager);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
 
         setSupportActionBar(toolbar);
 
-        if (getSupportActionBar() != null){
+        if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
-        /*
-        pagerView = getLayoutInflater().inflate(R.layout.fragment_start_speed, null, false);
-
-        speedometer = (SpeedView) pagerView.findViewById(R.id.speedView);
-
-        speedometer.speedTo(70, 4000);
-        */
-
-        //startSpeedFragment.setSpeed();
 
 
         adapterViewPager = new MyPagerAdapter(getSupportFragmentManager());
         pager.setAdapter(adapterViewPager);
 
-        //pager.setCurrentItem(1);
-        //new setAdapterTask().execute();
+        Intent intent = getIntent();
+
+        Bundle bundleData = intent.getBundleExtra("point");
+        if (bundleData == null) {
+            isBundle = false;
+        } else {
+            isBundle = true;
+
+            startLat = bundleData.getDouble("startLat");
+            startLng = bundleData.getDouble("startLng");
+            endLat = bundleData.getDouble("endLat");
+            endLng = bundleData.getDouble("endLng");
+
+            //StartMapFragment.drawBicyclePath();
+
+            pager.setCurrentItem(1);
+
+            //pager.setCurrentItem(1);
+            //new setAdapterTask().execute();
+        }
+
 
         //StartSpeedFragment startSpeedFragment = (StartSpeedFragment) getSupportFragmentManager().findFragmentByTag("android:switcher:"+R.id.startPager+":0");
         //StartSpeedFragment startSpeedFragment = (StartSpeedFragment) getSupportFragmentManager().findFragmentById(R.id.startPager);
@@ -164,7 +201,7 @@ public class StartActivity extends AppCompatActivity {
                             maxSpeed = mySpeed;
                         }
 
-                        StartSpeedFragment.speedometer.speedTo((int) mySpeed,1000);
+                        StartSpeedFragment.speedometer.speedTo((int) mySpeed, 1000);
                         //speed.setText("현재 속도 : " + mySpeed + " km/h, 최고속도 : " + maxSpeed + " km/h");
 
                         //speedometer.speedTo((int) mySpeed);
@@ -181,15 +218,15 @@ public class StartActivity extends AppCompatActivity {
 
                         totalDistance += movedDistance;
 
-                        distance.setText((int)(totalDistance) + "m");
-                        caloryInt = (int) (totalDistance/40);
-                        calory.setText(caloryInt+"");
+                        distance.setText((int) (totalDistance) + "m");
+                        caloryInt = (int) (totalDistance / 40);
+                        calory.setText(caloryInt + "");
                         //movedDistanceText.setText("움직인 거리 : " + movedDistance + "m");
 
                         previousLocation = location;
                     }
 
-                    Toast.makeText(getApplicationContext(), "onLocationChanged   위도 : " + lat + " / 경도 : " + lng + " /정확도 : " + location.getAccuracy(), Toast.LENGTH_LONG).show();
+                    //Toast.makeText(getApplicationContext(), "onLocationChanged   위도 : " + lat + " / 경도 : " + lng + " /정확도 : " + location.getAccuracy(), Toast.LENGTH_LONG).show();
                 }
             }
 
@@ -198,7 +235,7 @@ public class StartActivity extends AppCompatActivity {
             }
 
             public void onProviderEnabled(String provider) {
-                Toast.makeText(getApplicationContext(), "GPS가 켜졌습니다.", Toast.LENGTH_LONG).show();
+                //Toast.makeText(getApplicationContext(), "GPS가 켜졌습니다.", Toast.LENGTH_LONG).show();
             }
 
             public void onProviderDisabled(String provider) {
@@ -221,6 +258,7 @@ public class StartActivity extends AppCompatActivity {
         });
         */
     }
+
     public ViewPager getViewPager() {
         if (null == pager) {
             pager = (ViewPager) findViewById(R.id.startPager);
@@ -264,17 +302,17 @@ public class StartActivity extends AppCompatActivity {
         // Returns the page title for the top indicator
         @Override
         public CharSequence getPageTitle(int position) {
-            if(position == 0){
+            if (position == 0) {
                 return "속도계";
-            }else if(position == 1){
+            } else if (position == 1) {
                 return "지도";
-            }else{
+            } else {
                 return null;
             }
         }
     }
 
-    private class setAdapterTask extends AsyncTask<Void,Void,Void> {
+    private class setAdapterTask extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected Void doInBackground(Void... params) {
@@ -282,7 +320,7 @@ public class StartActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(Void result){
+        protected void onPostExecute(Void result) {
             pager.setAdapter(adapterViewPager);
         }
     }
@@ -361,22 +399,22 @@ public class StartActivity extends AppCompatActivity {
         alert.show();
     }
 
-    public void startPause(View view){
-        if(!timerOnCheck){
+    public void startPause(View view) {
+        if (!timerOnCheck) {
             if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                 alertCheckGPS();
-            }else {
+            } else {
                 startTimerTask();
                 timerOnCheck = true;
                 startPause.setText("pause");
                 startPause.setBackgroundColor(0xFFE7902E);
             }
-        }else{
-            if(!timerPauseCheck){
+        } else {
+            if (!timerPauseCheck) {
                 pauseTimerTask();
                 startPause.setText("start");
                 startPause.setBackgroundColor(0xFF5E7AC8);
-            }else{
+            } else {
                 startTimerTask();
                 startPause.setText("pause");
                 startPause.setBackgroundColor(0xFFE7902E);
@@ -384,12 +422,12 @@ public class StartActivity extends AppCompatActivity {
         }
     }
 
-    public void stop(View view){
-        if(timerOnCheck){
+    public void stop(View view) {
+        if (timerOnCheck) {
             timerOnCheck = false;
             stopTimerTask();
-        }else{
-            Toast.makeText(getApplicationContext(),"이미 꺼져있습니다.",Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(getApplicationContext(), "이미 꺼져있습니다.", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -399,7 +437,7 @@ public class StartActivity extends AppCompatActivity {
         }
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 3, locationListener);
 
-        Toast.makeText(getApplicationContext(),"주행 시작하였습니다.",Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), "주행 시작하였습니다.", Toast.LENGTH_LONG).show();
 
         timerPauseCheck = false;
         m1000MsCountTimerTask = new TimerTask() {
@@ -411,10 +449,10 @@ public class StartActivity extends AppCompatActivity {
                     @Override
                     public void run() {
 
-                        int hour = mCount/3600;
-                        int hourRest = mCount%3600;
-                        int minute = hourRest/60;
-                        int minuteRest = hourRest%60;
+                        int hour = mCount / 3600;
+                        int hourRest = mCount % 3600;
+                        int minute = hourRest / 60;
+                        int minuteRest = hourRest % 60;
                         int second = minuteRest;
 
                         timeRecord.setText(String.format("%02d", hour) + ":" + String.format("%02d", minute) + ":" + String.format("%02d", second));
@@ -435,10 +473,46 @@ public class StartActivity extends AppCompatActivity {
             }
             locationManager.removeUpdates(locationListener);
 
+
+            Intent intent = new Intent(this,SaveRecordActivity.class);
+
+            startActivityForResult(intent, 0);
             //mCount = 0;
         }
 
-       //timeRecord.setText("00:00:00");
+        //timeRecord.setText("00:00:00");
+    }
+
+    private class UpdateRunningInfo extends AsyncTask<String, Void, JSONObject> {
+        protected JSONObject doInBackground(String... urls) {
+
+            try {
+                JSONObject jsonObj = new JSONObject(urls[1]);
+
+                Connect con = new Connect(urls[0]);
+
+                return con.postJsonObject(con.getURL(), jsonObj);
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        protected void onPostExecute(JSONObject result) {
+            if (result == null) {
+                Toast.makeText(getApplicationContext(), "이동 정보를 업데이트 하는 도중 에러가 났습니다. 다시 한번 확인해주세요.", Toast.LENGTH_LONG).show();
+            } else {
+                try {
+                    if (result.getString("code").compareTo("0") == 0) {
+                    } else {
+                        Toast.makeText(getApplicationContext(), "이동 정보를 업데이트 하는 도중 에러가 났습니다. 다시 한번 확인해주세요.", Toast.LENGTH_LONG).show();
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     private void pauseTimerTask() {
@@ -452,7 +526,7 @@ public class StartActivity extends AppCompatActivity {
             }
             locationManager.removeUpdates(locationListener);
 
-            Toast.makeText(getApplicationContext(),"주행 일시 정지하였습니다.",Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "주행 일시 정지하였습니다.", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -496,16 +570,107 @@ public class StartActivity extends AppCompatActivity {
         });
     }
 
+    public void onBackPressed() {
+        Intent intent = new Intent(this,SaveRecordActivity.class);
+
+        startActivityForResult(intent, 0);
+        /*
+        JSONObject json = new JSONObject();
+
+        try {
+            json.put("kakao", kakaoId);
+            json.put("timeRecord", mCount);
+            json.put("distance", (int)totalDistance);
+
+            new UpdateRunningInfo().execute(getResources().getString(R.string.server_ip) + "/UpdateRunningInfo.php", json.toString());
+
+            StartMapFragment.startLat = 0;
+            StartMapFragment.startLng = 0;
+            StartMapFragment.endLat = 0;
+            StartMapFragment.endLng = 0;
+
+            startActivity(new Intent(this,MainActivity.class));
+            finish();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        */
+    }
+
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            finish(); // close this activity and return to preview activity (if there is any)
-        }else{
+            /*
+            JSONObject json = new JSONObject();
+
+            try {
+                json.put("kakao", kakaoId);
+                json.put("timeRecord", mCount);
+                json.put("distance", totalDistance);
+
+                new UpdateRunningInfo().execute(getResources().getString(R.string.server_ip) + "/UpdateRunningInfo.php", json.toString());
+
+                //new WebHook().execute(json.toString());
+
+                StartMapFragment.startLat = 0;
+                StartMapFragment.startLng = 0;
+                StartMapFragment.endLat = 0;
+                StartMapFragment.endLng = 0;
+
+                startActivity(new Intent(this,MainActivity.class));
+                finish();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }// close this activity and return to preview activity (if there is any)
+            */
+
+            Intent intent = new Intent(this,SaveRecordActivity.class);
+
+            startActivityForResult(intent, 0);
+
+        } else {
 
         }
         return super.onOptionsItemSelected(item);
     }
 
-    public void onStop(){
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == 0){
+            if(resultCode == 1){
+                JSONObject json = new JSONObject();
+
+                try {
+                    json.put("kakao", kakaoId);
+                    json.put("timeRecord", mCount);
+                    json.put("distance", totalDistance);
+
+                    new UpdateRunningInfo().execute(getResources().getString(R.string.server_ip) + "/UpdateRunningInfo.php", json.toString());
+
+                    //new WebHook().execute(json.toString());
+
+                    mTimer.cancel();
+                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        permissionCheck();
+                    }
+                    locationManager.removeUpdates(locationListener);
+
+                    Intent intent = new Intent(this,MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+                    startActivity(intent);
+
+                    finish();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }// close this activity and return to preview activity (if there is any)
+            }else{
+
+            }
+        }
+    }
+
+    public void onStop() {
         super.onStop();
 
         mTimer.cancel();

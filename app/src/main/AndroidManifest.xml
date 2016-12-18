@@ -9,6 +9,9 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.FLASHLIGHT" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_OWNER_DATA" />
+    <uses-permission android:name="android.permission.READ_OWNER_DATA" />
 
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
@@ -17,9 +20,10 @@
         android:name=".Kakao_Login.GlobalApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
+        android:label="BicycleGo"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme.NoActionBar">
+        android:theme="@style/AppTheme.NoActionBar"
+        android:windowSoftInputMode="stateHidden|adjustPan">
         <meta-data
             android:name="com.kakao.sdk.AppKey"
             android:value="@string/kakao_app_key" />
@@ -57,21 +61,15 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity2"
-            android:label="@string/title_activity_main"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".SignUpActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".MainActivity"
+            android:windowSoftInputMode="stateHidden|adjustPan"
             android:screenOrientation="portrait" />
         <activity android:name=".SettingActivity" />
         <activity android:name=".StartActivity" />
-        <activity
-            android:name=".TestActivity"
-            android:theme="@style/Spinner" />
         <activity
             android:name=".AgeActivity"
             android:theme="@style/Spinner" />
@@ -83,12 +81,12 @@
         <activity
             android:name=".SaveRecordActivity"
             android:label="@string/title_activity_save_record"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/Theme.myDialog" />
         <activity android:name=".RoadDetailActivity" />
         <activity
             android:name=".FindRoadMapActivity"
             android:label="@string/title_activity_find_road_map"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

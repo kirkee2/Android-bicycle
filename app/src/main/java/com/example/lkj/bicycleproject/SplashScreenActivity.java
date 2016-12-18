@@ -13,10 +13,42 @@ import android.widget.ImageView;
 import com.example.lkj.bicycleproject.Kakao_Login.LoginActivity;
 
 public class SplashScreenActivity extends AppCompatActivity {
+    private ImageView img;
+    private Animation animation;
+
+
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
 
+
+        img = (ImageView) findViewById(R.id.imageView);
+
+
+        animation = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.animation2);
+        img.setAnimation(animation);
+
+
+
+
+        animation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                finish();
+                startActivity(new Intent(getApplicationContext(),LoginActivity.class));
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        /*
         Handler handler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
@@ -29,6 +61,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         };
 
         handler.sendEmptyMessageDelayed(0, 3000);
+        */
     }
 
     @Override

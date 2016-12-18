@@ -5,6 +5,7 @@
     tools:context="com.example.lkj.bicycleproject.Fragment.FindRoadFragment"
     android:background="#FFFFFF">
 
+
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
@@ -12,11 +13,13 @@
         android:layout_gravity="center"
         android:weightSum="100">
 
+
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:weightSum="100">
+            android:weightSum="100"
+            android:background="#FF29B6F6">
 
             <LinearLayout
                 android:orientation="horizontal"
@@ -29,13 +32,23 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:id="@+id/startText"
-                    android:layout_weight="100" />
+                    android:hint="출발지를 입력해주세요."
+                    android:lines="1"
+                    android:maxLength="20"
+                    android:layout_weight="100"
+                    android:background="#FFFFFF"
+                    android:layout_marginLeft="10dp"
+                    android:inputType="text"
+                    android:imeOptions="actionSearch"
+                    android:textSize="20sp" />
 
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="출발지"
-                    android:id="@+id/start" />
+                    android:text="검색"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:id="@+id/start"
+                    android:textSize="17sp" />
 
             </LinearLayout>
 
@@ -50,13 +63,23 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:id="@+id/endText"
-                    android:layout_weight="100" />
+                    android:hint="도착지를 입력해주세요."
+                    android:lines="1"
+                    android:maxLength="20"
+                    android:layout_weight="100"
+                    android:background="#FFFFFF"
+                    android:layout_marginLeft="10dp"
+                    android:inputType="text"
+                    android:imeOptions="actionSearch"
+                    android:textSize="20sp" />
 
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="도착지"
-                    android:id="@+id/end" />
+                    android:text="검색"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:id="@+id/end"
+                    android:textSize="17sp" />
             </LinearLayout>
         </LinearLayout>
 
@@ -66,6 +89,7 @@
             android:id="@+id/recycler_view"
             android:scrollbars="vertical">
         </android.support.v7.widget.RecyclerView>
+
     </LinearLayout>
 
 </FrameLayout>

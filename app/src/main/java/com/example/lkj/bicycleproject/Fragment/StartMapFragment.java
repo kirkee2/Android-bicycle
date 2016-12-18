@@ -7,6 +7,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,11 +19,13 @@ import android.widget.Toast;
 import com.example.lkj.bicycleproject.Connection.WebHook;
 import com.example.lkj.bicycleproject.R;
 import com.example.lkj.bicycleproject.StartActivity;
+import com.skp.Tmap.TMapData;
 import com.skp.Tmap.TMapGpsManager;
 import com.skp.Tmap.TMapLabelInfo;
 import com.skp.Tmap.TMapMarkerItem;
 import com.skp.Tmap.TMapPOIItem;
 import com.skp.Tmap.TMapPoint;
+import com.skp.Tmap.TMapPolyLine;
 import com.skp.Tmap.TMapView;
 
 import java.util.ArrayList;
@@ -33,10 +36,15 @@ public class StartMapFragment extends Fragment implements TMapGpsManager.onLocat
 
     private FloatingActionButton btSpeed;
 
+    static View tmp;
+    public double startLat = 0;
+    public double startLng = 0;
+    public double endLat = 0;
+    public double endLng = 0;
 
-    private TMapView mMapView = null;
-    private Context mContext;
-    public static String mApiKey = "399b7639-7158-353d-8f24-e8ff3c376ade";
+    private static TMapView mMapView = null;
+    private  Context mContext;
+    public static String mApiKey = "399b7639-7158-353d-8f24-e8ff3c376ade"; // 발급받은 appKey
     private int m_nCurrentZoomLevel = 0;
     private double m_Latitude = 0;
     private double m_Longitude = 0;
@@ -67,6 +75,13 @@ public class StartMapFragment extends Fragment implements TMapGpsManager.onLocat
     android.os.Handler handler;
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mContext = getActivity();
+        mMapView = new TMapView(mContext);
+    }
+
+    @Override
     public void onLocationChange(Location location) {
         if(m_bTrackingMode) {
             mMapView.setLocationPoint(location.getLongitude(), location.getLatitude());
@@ -77,12 +92,20 @@ public class StartMapFragment extends Fragment implements TMapGpsManager.onLocat
         // Required empty public constructor
     }
 
+    public  void getAct(){
+        mContext = getActivity();
+
+        mMapView = new TMapView(mContext);
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater,container,savedInstanceState);
         View view = inflater.inflate(R.layout.fragment_start_map, container, false);
 
         contentView = (RelativeLayout)view.findViewById(R.id.contentView);
+
+        tmp = view.getRootView();
 
         //contentView.removeAllViews();
 
@@ -99,9 +122,7 @@ public class StartMapFragment extends Fragment implements TMapGpsManager.onLocat
 
         handler = new android.os.Handler();
 
-        mContext = getActivity();
-
-        mMapView = new TMapView(mContext);
+        getAct();
 
         //contentView.removeAllViews();
         contentView.addView(mMapView, new LinearLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
@@ -109,6 +130,18 @@ public class StartMapFragment extends Fragment implements TMapGpsManager.onLocat
         configureMapView();
 
         initView();
+
+        StartActivity startActivity = (StartActivity) getActivity();
+
+        if(startActivity.getIsBundle()){
+            startLat = startActivity.getStartLat();
+            startLng = startActivity.getStartLng();
+            endLat = startActivity.getEndLat();
+            endLng = startActivity.getEndLng();
+            drawBicyclePath();
+        }else{
+
+        }
 
         mArrayID = new ArrayList<String>();
 
@@ -129,6 +162,8 @@ public class StartMapFragment extends Fragment implements TMapGpsManager.onLocat
         gps.setMinDistance(5);
         gps.setProvider(gps.NETWORK_PROVIDER);
         gps.OpenGps();
+
+
 
         return view;
     }
@@ -302,6 +337,45 @@ public class StartMapFragment extends Fragment implements TMapGpsManager.onLocat
         m_bSightVisible = false;
         m_bTrackingMode = false;
     }
+
+    public void drawBicyclePath() {
+
+        TMapPoint point1 = new TMapPoint(startLat,startLng);
+        TMapPoint point2 = new TMapPoint(endLat,endLng);
+        //TMapPoint point1 = mMapView.getCenterPoint();
+        //TMapPoint point2 = randomTMapPoint();
+
+        Log.d("asd","asdsadasdasas  asdasdsad "+startLat + " " + startLng + " " + endLat + " " + endLng);
+
+        TMapData tmapdata = new TMapData();
+
+        Log.d("asd","3");
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        tmapdata.findPathDataWithType(TMapData.TMapPathType.BICYCLE_PATH, point1, point2, new TMapData.FindPathDataListenerCallback() {
+            @Override
+            public void onFindPathData(TMapPolyLine polyLine) {
+
+                Log.d("asd","4");
+
+                mMapView.addTMapPath(polyLine);
+
+                TMapPoint point = new TMapPoint((startLat + endLat)/2.0,(startLng+endLng)/2.0);
+                mMapView.setCenterPoint(point.getLongitude(), point.getLatitude(), true);
+                mMapView.setZoomLevel(14);
+                //((StartActivity)tmp.getContext()).getViewPager().setCurrentItem(1);
+            }
+        });
+
+
+        Log.d("asd","5");
+
+    }
+
 
 
     @Override

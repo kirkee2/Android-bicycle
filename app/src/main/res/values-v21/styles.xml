@@ -10,6 +10,17 @@
         <item name="colorAccent">#FF03A9F4</item>
     </style>
 
+    <style name="Theme.myDialog" parent="Theme.AppCompat.Dialog">
+        <item name="android:colorBackground">@color/background</item>
+        <item name="android:windowBackground">@color/background</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="colorPrimary">#FF29B6F6</item>
+        <item name="colorPrimaryDark">#FF03A9F4</item>
+        <item name="colorAccent">#FF03A9F4</item>
+    </style>
+
+
     <style name="spinner_style">
         <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">wrap_content</item>

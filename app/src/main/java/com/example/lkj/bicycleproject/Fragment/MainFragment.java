@@ -182,16 +182,17 @@ public class MainFragment extends Fragment {
                         todayCalory.clearComposingText();
                         */
 
-                        todayDistance.setText(result.getString("todayDistance")+"m");
+                        todayDistance.setText(result.getInt("todayDistance")+"m");
 
-                        int hour = Integer.parseInt(result.getString("todayTimeRecord"))/3600;
-                        int restHour = Integer.parseInt(result.getString("todayTimeRecord"))%3600;
+                        int hour = result.getInt("todayTimeRecord")/3600;
+                        int restHour = result.getInt("todayTimeRecord")%3600;
                         int minute = restHour/60;
                         int restMinute = restHour%60;
                         int second = restMinute;
 
                         todayTimeRecord.setText(String.format("%02d", hour)+":"+String.format("%02d", minute)+":"+String.format("%02d", second));
-                        todayCalory.setText((Integer.parseInt(result.getString("todayTimeRecord"))/10)+"Kcal");
+                        int caloryInt = result.getInt("todayDistance") / 40;
+                        todayCalory.setText(caloryInt+"Kcal");
                     }else if(result.getString("code").compareTo("1") == 0) {
 
                         todayDistance.clearComposingText();

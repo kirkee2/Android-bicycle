@@ -1,7 +1,12 @@
 package com.example.lkj.bicycleproject;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.PointF;
 import android.location.Location;
 import android.os.Bundle;
@@ -9,19 +14,26 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.androidquery.util.Common;
+import com.example.lkj.bicycleproject.Connection.WebHook;
+import com.example.lkj.bicycleproject.Controller.MarkerOverlay;
 import com.example.lkj.bicycleproject.Fragment.FindRoadFragment;
+import com.skp.Tmap.TMapData;
 import com.skp.Tmap.TMapGpsManager;
 import com.skp.Tmap.TMapLabelInfo;
 import com.skp.Tmap.TMapMarkerItem;
+import com.skp.Tmap.TMapMarkerItem2;
 import com.skp.Tmap.TMapPOIItem;
 import com.skp.Tmap.TMapPoint;
+import com.skp.Tmap.TMapPolyLine;
 import com.skp.Tmap.TMapView;
 
 import java.util.ArrayList;
@@ -31,9 +43,22 @@ public class FindRoadMapActivity extends AppCompatActivity implements TMapGpsMan
     private RelativeLayout contentView = null;
 
 
+    private FloatingActionButton restroom;
+    private FloatingActionButton myLocation;
+
+
+
+    private Toolbar toolbar;
+
     private TMapView mMapView = null;
 
     private Context mContext;
+
+    private double startLat = 0;
+    private double startLng = 0;
+    private double endLat = 0;
+    private double endLng = 0;
+
 
     private 	int 		m_nCurrentZoomLevel = 0;
     private 	double 		m_Latitude  = 0;
@@ -65,6 +90,12 @@ public class FindRoadMapActivity extends AppCompatActivity implements TMapGpsMan
     public static String mApiKey = "399b7639-7158-353d-8f24-e8ff3c376ade"; // 발급받은 appKey
     public static String mBizAppID; // 발급받은 BizAppID (TMapTapi로 TMap앱 연동을 할 때 BizAppID 꼭 필요)
 
+    public void getAct(){
+        mContext = this;
+
+        mMapView = new TMapView(this);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,10 +103,18 @@ public class FindRoadMapActivity extends AppCompatActivity implements TMapGpsMan
 
         contentView = (RelativeLayout)findViewById(R.id.contentView);
 
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
 
-        mContext = this;
+        setSupportActionBar(toolbar);
 
-        mMapView = new TMapView(this);
+        // add back arrow to toolbar
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
+
+        getAct();
 
         contentView.addView(mMapView, new LinearLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
 
@@ -104,7 +143,71 @@ public class FindRoadMapActivity extends AppCompatActivity implements TMapGpsMan
         gps.setProvider(gps.NETWORK_PROVIDER);
         gps.OpenGps();
 
+        restroom = (FloatingActionButton)findViewById(R.id.restroom);
+        myLocation = (FloatingActionButton)findViewById(R.id.myLocation);
+
+
+        restroom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mMapView.setBicycleFacilityInfo(!mMapView.isBicycleFacilityInfo());
+
+                if(mMapView.isBicycleFacilityInfo()){
+                    restroom.setBackgroundTintList(ColorStateList.valueOf(Color
+                            .parseColor("#f1fe652d")));
+                }else{
+                    restroom.setBackgroundTintList(ColorStateList.valueOf(Color
+                            .parseColor("#f148eaff")));
+                }
+            }
+        });
+
+
+        myLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Boolean bIsTracking = mMapView.getIsTracking();
+
+                m_bTrackingMode = !m_bTrackingMode;
+                mMapView.setTrackingMode(m_bTrackingMode);
+
+                if(bIsTracking){
+                    myLocation.setBackgroundTintList(ColorStateList.valueOf(Color
+                            .parseColor("#f1fe652d")));
+
+                    mMapView.setZoomLevel(18);
+                }else{
+                    myLocation.setBackgroundTintList(ColorStateList.valueOf(Color
+                            .parseColor("#f148eaff")));
+
+                }
+            }
+
+        });
+
+
+
         mMapView.setTMapLogoPosition(TMapView.TMapLogoPositon.POSITION_BOTTOMRIGHT);
+
+        Intent intent = getIntent();
+
+        Bundle bundleData = intent.getBundleExtra("point");
+        if (bundleData == null) {
+            Toast.makeText(this, "Bundle Data Null!", Toast.LENGTH_LONG).show();
+
+        }else {
+            startLat = bundleData.getDouble("startLat");
+            startLng = bundleData.getDouble("startLng");
+            endLat = bundleData.getDouble("endLat");
+            endLng = bundleData.getDouble("endLng");
+
+            drawBicyclePath();
+
+            TMapPoint point = new TMapPoint((startLat + endLat)/2.0,(startLng+endLng)/2.0);
+            mMapView.setCenterPoint(point.getLongitude(), point.getLatitude(), true);
+            mMapView.setZoomLevel(14);
+        }
+
     }
 
     private void configureMapView() {
@@ -205,5 +308,61 @@ public class FindRoadMapActivity extends AppCompatActivity implements TMapGpsMan
         if(m_bTrackingMode) {
             mMapView.setLocationPoint(location.getLongitude(), location.getLatitude());
         }
+    }
+
+    public TMapPoint randomTMapPoint() {
+        double latitude = ((double)Math.random() ) * (37.575113-37.483086) + 37.483086;
+        double longitude = ((double)Math.random() ) * (127.027359-126.878357) + 126.878357;
+
+        latitude = Math.min(37.575113, latitude);
+        latitude = Math.max(37.483086, latitude);
+
+        longitude = Math.min(127.027359, longitude);
+        longitude = Math.max(126.878357, longitude);
+
+        TMapPoint point = new TMapPoint(latitude, longitude);
+
+        return point;
+    }
+
+    public void drawBicyclePath() {
+        TMapPoint point1 = new TMapPoint(startLat,startLng);
+        TMapPoint point2 = new TMapPoint(endLat,endLng);
+        //TMapPoint point1 = mMapView.getCenterPoint();
+        //TMapPoint point2 = randomTMapPoint();
+
+
+
+        TMapData tmapdata = new TMapData();
+
+        tmapdata.findPathDataWithType(TMapData.TMapPathType.BICYCLE_PATH, point1, point2, new TMapData.FindPathDataListenerCallback() {
+            @Override
+            public void onFindPathData(TMapPolyLine polyLine) {
+                mMapView.addTMapPath(polyLine);
+            }
+        });
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish(); // close this activity and return to preview activity (if there is any)
+        }else{
+
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    public void onStart(View view){
+        Intent intent = new Intent(FindRoadMapActivity.this,StartActivity.class);
+
+        Bundle bundleData = new Bundle();
+        bundleData.putDouble("startLat", startLat);
+        bundleData.putDouble("startLng", startLng);
+        bundleData.putDouble("endLat", endLat);
+        bundleData.putDouble("endLng", endLng);
+
+        intent.putExtra("point",bundleData);
+
+        startActivity(intent);
     }
 }

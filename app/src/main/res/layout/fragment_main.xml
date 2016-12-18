@@ -96,7 +96,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="총 누적 칼로리"
+                android:text="총 소모 칼로리"
                 android:textSize="10sp" />
 
         </LinearLayout>
