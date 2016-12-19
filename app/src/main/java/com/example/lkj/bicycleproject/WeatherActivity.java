@@ -157,7 +157,7 @@ public class WeatherActivity extends AppCompatActivity {
 
                     new Weather().execute(addressInfo.get(0), addressInfo.get(1), addressInfo.get(2));
 
-                    Toast.makeText(getApplicationContext(),"onProviderEnabled " + addressInfo.get(0) +" " + addressInfo.get(1) +" "+ addressInfo.get(2),Toast.LENGTH_LONG).show();
+                    //Toast.makeText(getApplicationContext(),"onProviderEnabled " + addressInfo.get(0) +" " + addressInfo.get(1) +" "+ addressInfo.get(2),Toast.LENGTH_LONG).show();
 
 
                     infoLayout.setVisibility(View.INVISIBLE);
@@ -355,6 +355,7 @@ public class WeatherActivity extends AppCompatActivity {
                 mainLayout.setVisibility(View.INVISIBLE);
 
                 Toast.makeText(getApplicationContext(), "날씨 정보를 받는 도중 에러가 났습니다. 다시 한번 확인해주세요.", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(),"변경된 도로명 표기법으로 인해 날씨 정보를 못 받아 왔을 수도 있습니다",Toast.LENGTH_LONG).show();
             } else {
                 String temp;
                 String wfKor;

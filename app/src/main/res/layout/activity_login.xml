@@ -54,7 +54,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="제목 미정의 간단한 소개글 자리입니다"
+        android:text="BicycleGo의 간단한 소개글 자리입니다"
         android:id="@+id/textView3"
         android:textSize="25dp"
         android:layout_below="@+id/textView"
